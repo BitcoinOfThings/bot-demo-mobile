@@ -31,11 +31,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'BOT Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MqttPage(title: 'Adafruit.io learning'),
+      home: MqttPage(title: 'Bitcoin Of Things (BOT) Demo'),
     );
   }
 }

@@ -59,7 +59,7 @@ Future<Map> _getBrokerAndKey(BuildContext context) async {
 }
 
 _getTime(BuildContext context) async {
-  print("right before getConnectSTuff");
+  print("right before getConnectStuff");
   Map connectJson = await _getBrokerAndKey(context);
   print('broker: ${connectJson['broker']}');
   print('key   : ${connectJson['key']}');

@@ -24,7 +24,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-import 'Adafruit_feed.dart';
+import 'BitcoinOfThings_feed.dart';
 
 class AppMqttTransactions {
   Logger log;
@@ -69,7 +69,7 @@ class AppMqttTransactions {
   }
 
 //
-// Connect to Adafruit io
+// Connect to BitcoinOfThings
 //
   Future<bool> _connectToClient() async {
     if (client != null &&
@@ -140,14 +140,14 @@ class AppMqttTransactions {
     client.logging(on: true);
     final MqttConnectMessage connMess = MqttConnectMessage()
         .authenticateAs(connectJson['username'], connectJson['key'])
-        .withClientIdentifier('myClientID')
+        .withClientIdentifier('demo')
         .keepAliveFor(60) // Must agree with the keep alive set above or not set
         .withWillTopic(
             'willtopic') // If you set this you must set a will message
         .withWillMessage('My Will message')
         .startClean() // Non persistent session for testing
         .withWillQos(MqttQos.atMostOnce);
-    log.info('Adafruit client connecting....');
+    log.info('BOT client connecting....');
     client.connectionMessage = connMess;
 
     /// Connect the client, any errors here are communicated by raising of the appropriate exception. Note
@@ -164,11 +164,11 @@ class AppMqttTransactions {
 
     /// Check we are connected
     if (client.connectionStatus.state == MqttConnectionState.connected) {
-      log.info('Adafruit client connected');
+      log.info('BOT client connected');
     } else {
       /// Use status here rather than state if you also want the broker return code.
       log.info(
-          'Adafruit client connection failed - disconnecting, status is ${client.connectionStatus}');
+          'BOT client connection failed - disconnecting, status is ${client.connectionStatus}');
       client.disconnect();
       client = null;
     }
@@ -194,7 +194,7 @@ class AppMqttTransactions {
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
       /// The payload is a byte buffer, this will be specific to the topic
-      AdafruitFeed.add(pt);
+      BitcoinOfThingsFeed.add(pt);
       log.info(
           'Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       return pt;

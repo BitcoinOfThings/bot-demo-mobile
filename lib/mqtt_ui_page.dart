@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'mqtt_stream.dart';
-import 'Adafruit_feed.dart';
+import 'BitcoinOfThings_feed.dart';
 
 class MqttPage extends StatefulWidget {
   MqttPage({this.title});
@@ -12,7 +12,7 @@ class MqttPage extends StatefulWidget {
 
 class MqttPageState extends State<MqttPage> {
   // Instantiate an instance of the class that handles
-  // connecting, subscribing, publishing to Adafruit.io
+  // connecting, subscribing, publishing to BitcoinOfThings
   AppMqttTransactions myMqtt = AppMqttTransactions();
   final myTopicController = TextEditingController();
   final myValueController = TextEditingController();
@@ -81,14 +81,14 @@ class MqttPageState extends State<MqttPage> {
 
   Widget _subscriptionData() {
     return StreamBuilder(
-        stream: AdafruitFeed.sensorStream,
+        stream: BitcoinOfThingsFeed.sensorStream,
         builder: (context, snapshot) {
           // if (!snapshot.hasData) {
           //   return CircularProgressIndicator();
           // }
           String reading = snapshot.data;
           if (reading == null) {
-            reading = 'no value is available';
+            reading = 'Messages will show here when received.';
           }
           return Text(reading);
         });
