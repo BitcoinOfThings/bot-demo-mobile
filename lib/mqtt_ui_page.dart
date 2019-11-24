@@ -102,7 +102,7 @@ class MqttPageState extends State<MqttPage> {
           Row(
             children: <Widget>[
               Text(
-                'Value:',
+                'Message:',
                 style: TextStyle(fontSize: 24),
               ),
               // To use TextField within a row, it needs to be wrapped in a Flexible
@@ -112,7 +112,7 @@ class MqttPageState extends State<MqttPage> {
                   controller: myValueController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: 'Enter value to publish',
+                    hintText: 'Enter message to publish',
                   ),
                 ),
               ),

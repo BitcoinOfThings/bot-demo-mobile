@@ -1,0 +1,5 @@
+{
+    "broker": "mqtt.bitcoinofthings.com",
+    "username": "demo",
+    "key": "demo"
+}
