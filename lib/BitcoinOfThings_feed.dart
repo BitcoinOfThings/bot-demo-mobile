@@ -16,7 +16,7 @@ class BitcoinOfThingsFeed {
 //
 // TODO: add takes in a string, but forces the feed to be an int
   static void add(String value) {
-    Logger log = Logger('Adafruit_feed.dart');
+    Logger log = Logger('BitcoinOfThings_feed.dart');
     try {
       _feedController.add(value);
       log.info('---> added value to the Stream... the value is: $value');

@@ -202,7 +202,7 @@ class AppMqttTransactions {
   }
 
 //////////////////////////////////////////
-// Publish to an (Adafruit) mqtt topic.
+// Publish to an (BitcoinOfThings) mqtt topic.
   Future<void> publish(String topic, String value) async {
     // Connect to the client if we haven't already
     if (await _connectToClient() == true) {

@@ -4,7 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 //
-// This is added to route the logging info - which includes which file and where in the file
+// added to route the logging info - the file and where in the file
 // the message came from.
 //
   void initLogger() {
@@ -22,6 +22,7 @@ import 'package:stack_trace/stack_trace.dart';
       }
     });
   }
+
 void main() {
   initLogger();
   runApp(MyApp());
