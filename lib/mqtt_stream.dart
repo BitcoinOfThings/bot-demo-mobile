@@ -97,7 +97,8 @@ class AppMqttTransactions {
     if (client.connectionStatus.returnCode == MqttConnectReturnCode.solicited) {
       log.info(':OnDisconnected callback is solicited, this is correct');
     }
-    client.disconnect();
+    // RTFM. Do not call disconnect from onDisconnected
+    //client.disconnect();
   }
 
   /// The successful connect callback
@@ -107,8 +108,8 @@ class AppMqttTransactions {
 
   //static Stream<List<Watts>> wattsStream() {}
   //
-  // uses the config/private.json asset to get the Adafruit broker and our
-  // Adafruit IO key.  config/private.json should be a file in .gitignore.
+  // uses the config/private.json asset to get the 
+  // API info.  config/private.json should be a file in .gitignore.
   // the intent is to hide this private info in a file that is not sync'd
   // with gitHub.
   //
@@ -119,7 +120,7 @@ class AppMqttTransactions {
   }
 
   //
-  // login to Adafruit
+  // login to Service
   //
   Future<MqttClient> _login() async {
     // With await, we are assured of getting a string back and not a
@@ -176,7 +177,7 @@ class AppMqttTransactions {
   }
 
 //
-// Subscribe to the readings being published into Adafruit's mqtt by the energy monitor(s).
+// Subscribe to messages being published 
 //
   Future _subscribe(String topic) async {
     // for now hardcoding the topic

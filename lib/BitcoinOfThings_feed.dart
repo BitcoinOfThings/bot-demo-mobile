@@ -1,3 +1,4 @@
+// UI component that wraps the stream
 import 'dart:async';
 import 'package:logging/logging.dart';
 

@@ -1,3 +1,4 @@
+// in context of on subscription, show that sub messages
 import 'package:flutter/material.dart';
 import 'mqtt_stream.dart';
 import 'BitcoinOfThings_feed.dart';
@@ -11,8 +12,7 @@ class MqttPage extends StatefulWidget {
 }
 
 class MqttPageState extends State<MqttPage> {
-  // Instantiate an instance of the class that handles
-  // connecting, subscribing, publishing to BitcoinOfThings
+  // Handles connecting, subscribing, publishing to BitcoinOfThings
   AppMqttTransactions myMqtt = AppMqttTransactions();
   final myTopicController = TextEditingController();
   final myValueController = TextEditingController();
@@ -88,7 +88,7 @@ class MqttPageState extends State<MqttPage> {
           // }
           String reading = snapshot.data;
           if (reading == null) {
-            reading = 'Messages will show here when received.';
+            reading = 'Messages show here when received.';
           }
           return Text(reading);
         });

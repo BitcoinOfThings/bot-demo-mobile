@@ -32,11 +32,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'BOT Demo',
+      title: 'BOT Mobile',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MqttPage(title: 'Bitcoin Of Things (BOT) Demo'),
+      home: MqttPage(title: 'Bitcoin Of Things (BOT) Mobile'),
     );
   }
 }
