@@ -15,8 +15,9 @@ class SubPage extends StatefulWidget {
 class MqttPageState extends State<SubPage> {
   // Handles connecting, subscribing, publishing to BitcoinOfThings
   AppMqttTransactions myMqtt = AppMqttTransactions();
-  final myTopicController = TextEditingController();
+  final myTopicController = TextEditingController(text:'demo');
   final myValueController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +33,7 @@ class MqttPageState extends State<SubPage> {
   // the UI.
   Widget _body() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         _subscriptionInfo(),
         _subscriptionData(),

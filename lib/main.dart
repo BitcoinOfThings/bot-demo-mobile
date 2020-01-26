@@ -1,6 +1,6 @@
 // App shell
 import 'package:flutter/material.dart';
-import 'sub_page.dart';
+import 'home_page.dart';
 import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
 
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SubPage(title: 'Bitcoin Of Things (BOT) Mobile'),
+      home: HomePage(title: 'Bitcoin Of Things (BOT) Mobile'),
     );
   }
 }
