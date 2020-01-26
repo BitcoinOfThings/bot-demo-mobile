@@ -1,5 +1,6 @@
+// App shell
 import 'package:flutter/material.dart';
-import 'mqtt_ui_page.dart';
+import 'sub_page.dart';
 import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
 
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MqttPage(title: 'Bitcoin Of Things (BOT) Mobile'),
+      home: SubPage(title: 'Bitcoin Of Things (BOT) Mobile'),
     );
   }
 }

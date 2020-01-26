@@ -1,17 +1,18 @@
+// This will be the subscription page
 // in context of on subscription, show that sub messages
 import 'package:flutter/material.dart';
 import 'mqtt_stream.dart';
 import 'BitcoinOfThings_feed.dart';
 
-class MqttPage extends StatefulWidget {
-  MqttPage({this.title});
+class SubPage extends StatefulWidget {
+  SubPage({this.title});
   final String title;
 
   @override
   MqttPageState createState() => MqttPageState();
 }
 
-class MqttPageState extends State<MqttPage> {
+class MqttPageState extends State<SubPage> {
   // Handles connecting, subscribing, publishing to BitcoinOfThings
   AppMqttTransactions myMqtt = AppMqttTransactions();
   final myTopicController = TextEditingController();

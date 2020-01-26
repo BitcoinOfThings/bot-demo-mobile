@@ -1,4 +1,4 @@
-// Main UI shell
+// A sample page. Not used
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
