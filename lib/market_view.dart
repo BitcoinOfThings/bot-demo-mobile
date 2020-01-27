@@ -28,27 +28,11 @@ class MarketState extends State<MarketView> {
   }
   @override
   Widget build(BuildContext context) => 
-  // Scaffold(
-  //   appBar: AppBar(
-  //     centerTitle: true,
-  //     title: Text('Top Beers'),
-  //   ),
-  // );
   ListView.builder(
       itemCount: _pubs.length,
       itemBuilder: (context, index) => 
         MarketPublicationTile(_pubs[index]),
   );
-  // Center(
-  //       child: Container(
-  //         child: Column(
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: <Widget>[
-  //             // list goes here
-  //           ]
-  //           )
-  //       )
-  // );
 }
 
 Future<Stream<MarketPublication>> getMarket() async {

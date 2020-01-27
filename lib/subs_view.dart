@@ -1,11 +1,44 @@
 // show list of subs for user
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'auth/auth_state.dart';
+import 'signin_page.dart';
 import 'sub_view.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
-Widget subsView(context) {
+class SubsViewBuilder extends StatelessWidget {
+
+  final StreamController<AuthenticationState> _streamController;
+  const SubsViewBuilder(this._streamController);
+
+  Widget buildUi(BuildContext context, AuthenticationState s) {
+    if (s.authenticated) {
+      return SubsView();
+    } else {
+      return SignInPage(_streamController);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new StreamBuilder<AuthenticationState>(
+        stream: _streamController.stream,
+        initialData: new AuthenticationState.initial(),
+        builder: (BuildContext context,
+            AsyncSnapshot<AuthenticationState> snapshot) {
+          final state = snapshot.data;
+          return buildUi(context, state);
+        });
+  }
+}
+
+class SubsView extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
   return Center(
         child: Container(
           child: Column(
@@ -58,3 +91,4 @@ Widget subsView(context) {
         print('Request failed with status: ${response.statusCode}.');
       }
   }
+}

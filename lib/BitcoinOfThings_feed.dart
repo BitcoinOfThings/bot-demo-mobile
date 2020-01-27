@@ -13,7 +13,6 @@ class BitcoinOfThingsFeed {
   // A Stream controller alerts the stream when new data is available.
   // The controller should be private.
   static StreamController<String> _feedController = 
-    //StreamController<String>();
     BehaviorSubject();
 
   // Expose the stream so a StreamBuilder can use it.
