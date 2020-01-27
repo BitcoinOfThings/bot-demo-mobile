@@ -15,9 +15,13 @@
 //
 // SCENARIO
 // ========
-// In this example, we subscribe to an Adafruit.io stream.  It is private so we authenticate with
-// our username and password.  The stream of data is expected to be integers.  The data returned is
-// put into a Stream so the rest of Flutter / Dart can interact with the data.
+// In this example, we subscribe to an mqtt stream.  
+// It is private so we authenticate with
+// our username and password.  
+// The stream of data is expected to be integers.  
+// The data returned is
+// put into a Stream so the rest of Flutter / Dart 
+// can interact with the data.
 //
 //
 import 'package:mqtt_client/mqtt_client.dart';
@@ -42,7 +46,7 @@ class AppMqttTransactions {
   String previousTopic;
   bool bAlreadySubscribed = false;
 //////////////////////////////////////////
-// Subscribe to an (Adafruit) mqtt topic.
+// Subscribe to a mqtt topic.
   Future<bool> subscribe(String topic) async {
     // With await, we are assured of getting a string back and not a
     // Future<String> placeholder instance.
@@ -106,7 +110,6 @@ class AppMqttTransactions {
     log.info('OnConnected client callback - Client connection was sucessful');
   }
 
-  //static Stream<List<Watts>> wattsStream() {}
   //
   // uses the config/private.json asset to get the 
   // API info.  config/private.json should be a file in .gitignore.
@@ -187,7 +190,8 @@ class AppMqttTransactions {
     log.info('Subscribing to the topic $topic');
     client.subscribe(topic, MqttQos.atMostOnce);
 
-    /// The client has a change notifier object(see the Observable class) which we then listen to to get
+    /// The client has a change notifier object(see the Observable class) 
+    /// which we then listen to to get
     /// notifications of published updates to each subscribed topic.
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload;
@@ -203,7 +207,7 @@ class AppMqttTransactions {
   }
 
 //////////////////////////////////////////
-// Publish to an (BitcoinOfThings) mqtt topic.
+// Publish to a (BitcoinOfThings) mqtt topic.
   Future<void> publish(String topic, String value) async {
     // Connect to the client if we haven't already
     if (await _connectToClient() == true) {

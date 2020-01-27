@@ -24,6 +24,7 @@ dependencies:
   logging: ^0.11.3+2
   stack_trace: ^1.9.3
   http: ^0.12.0+4
+  rxdart: ^0.23.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
