@@ -26,10 +26,10 @@ import 'package:stack_trace/stack_trace.dart';
 
 void main() {
   initLogger();
-  runApp(MyApp());
+  runApp(BOTApp());
 }
 
-class MyApp extends StatelessWidget {
+class BOTApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

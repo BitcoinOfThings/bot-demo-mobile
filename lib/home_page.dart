@@ -5,6 +5,7 @@ import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'sub_page.dart';
+import 'test_page.dart';
 
 // Home page has:
 // 1) Button to load Subscriptions
@@ -22,11 +23,27 @@ class HomePage extends StatefulWidget {
 class HomeState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DefaultTabController(
+      length:3,
+      child: Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        bottom: TabBar(
+          tabs: <Widget>[
+            Text('Subs'),
+            Text('Pubs'),
+            Text('Market')
+          ],
+        ),
       ),
-      body: Center(
+      body: _body(context),
+    ),
+    );
+  }
+}
+
+Widget _body(context) {
+  return Center(
         child: Container(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +63,17 @@ class HomeState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) 
-                => SubPage(title: 'BOT Demo Sub')),
+                => SubPage(title: 'BOT Demo Sub')));
+            }
+          ),
+            RaisedButton(
+            child: const Text("Test"),
+            splashColor: Colors.blue,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) 
+                => TestPage(title: 'Test Notification')),
               );
             },
           )
@@ -54,9 +81,7 @@ class HomeState extends State<HomePage> {
           ],
           )
         ),
-      ),
-    );
-  }
+      );
 }
 
   void getsubs(mbid, password) async {

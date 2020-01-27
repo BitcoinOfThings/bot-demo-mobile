@@ -1,36 +1,40 @@
-// A sample page. Not used
+// A sample page
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
 
-class MqttPage extends StatefulWidget {
-  MqttPage({this.title});
+class TestPage extends StatefulWidget {
+  TestPage({this.title});
   final String title;
 
   @override
-  MqttPageState createState() => MqttPageState();
+  TestPageState createState() => TestPageState();
 }
 
-class MqttPageState extends State<MqttPage> {
+class TestPageState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
+      body: _body(context),
+    );
+  }
+}
+
+Widget _body(context) {
+  return Center(
         child: Container(
           child: RaisedButton(
-            child: const Text("Get Time"),
+            child: const Text("A test page"),
             splashColor: Colors.blue,
             onPressed: () {
               _getTime(context);
             },
           ),
         ),
-      ),
-    );
-  }
+      );
 }
 
 printString() async {
