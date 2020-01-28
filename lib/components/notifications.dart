@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 
+class NotificationMessage {
+  final String title;
+  final String body;
+  NotificationMessage(this.title, this.body);
+}
+
 class ReceivedNotification {
   final int id;
   final String title;
@@ -57,7 +63,10 @@ void init() async {
 
 }
 
-  Future<void> show() async {
+// show a NotificationMessage
+  Future<void> show(msg) async {
+    if (msg == null) return;
+    //TODO: what is this channel stuff?
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'your channel id', 'your channel name', 'your channel description',
         importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
@@ -65,7 +74,7 @@ void init() async {
     var platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-        0, 'plain title', 'plain body', platformChannelSpecifics,
+        0, msg.title, msg.body, platformChannelSpecifics,
         payload: 'item x');
   }
 }

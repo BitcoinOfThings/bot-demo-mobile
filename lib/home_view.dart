@@ -62,7 +62,7 @@ class HomeView extends StatelessWidget {
                   RaisedButton(
                     child: const Text('Show plain notification'),
                     onPressed: () async {
-                      await _notifications.show();
+                      await _notifications.show(NotificationMessage('Pub\$Sub sent you a message','Your message could go here'));
                     },
                   ),
 
