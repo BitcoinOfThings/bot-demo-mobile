@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:bot_demo_mobile/components/notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'components/localStorage.dart';
 import 'signin_page.dart';
 import 'test_page.dart';
@@ -35,9 +37,15 @@ class HomeViewBuilder extends StatelessWidget {
 
 // home view will show login or notifications
 class HomeView extends StatelessWidget {
-  final StreamController<AuthenticationState> _streamController;
-  
-  const HomeView(this._streamController);
+  //TODO: was final
+  StreamController<AuthenticationState> _streamController;
+  Notifications _notifications;
+
+  HomeView(streamController) {
+    this._streamController = streamController;
+    this._notifications = new Notifications();
+    this._notifications.init();
+  }
 
   signOut() {
     LocalStorage.delete("usercred");
@@ -51,8 +59,15 @@ class HomeView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+                  RaisedButton(
+                    child: const Text('Show plain notification'),
+                    onPressed: () async {
+                      await _notifications.show();
+                    },
+                  ),
+
             RaisedButton(
-            child: const Text("Test"),
+            child: const Text("Notifications go here"),
             splashColor: Colors.blue,
             onPressed: () {
               Navigator.push(
@@ -73,3 +88,5 @@ class HomeView extends StatelessWidget {
     );
   }
 }
+
+
