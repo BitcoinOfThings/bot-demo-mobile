@@ -3,11 +3,24 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'auth/auth_state.dart';
+import 'components/localStorage.dart';
+import 'components/sub_list.dart';
+import 'models/Subscription.dart';
 import 'signin_page.dart';
-import 'sub_view.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'dart:io';
+
+          //   RaisedButton(
+          //   child: const Text("Demo Sub"),
+          //   splashColor: Colors.blue,
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) 
+          //       => SubPage(title: 'BOT Demo Sub')));
+          //   }
+          // ),
 
 class SubsViewBuilder extends StatelessWidget {
 
@@ -35,60 +48,96 @@ class SubsViewBuilder extends StatelessWidget {
   }
 }
 
-class SubsView extends StatelessWidget {
-
+class SubsView extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-  return Center(
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-
-            RaisedButton(
-            child: const Text("Get Subscriptions"),
-            splashColor: Colors.blue,
-            onPressed: () {
-              getsubs('xxx','yyy');
-            },
-          ),
-            RaisedButton(
-            child: const Text("Demo Sub"),
-            splashColor: Colors.blue,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) 
-                => SubPage(title: 'BOT Demo Sub')));
-            }
-          ),
-
-          ],
-          )
-        ),
-      );
+  SubsState createState() => SubsState();
 }
 
-  void getsubs(mbid, password) async {
+class SubsState extends State<SubsView> {
+  List<Subscription> _subs = <Subscription>[];
+
+  @override
+  void initState() {
+    super.initState();
+    listenForSubs();
+  }
+
+   @override
+   void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  void listenForSubs() async {
+    // final Stream<Subscription> stream = await getsubs();
+    // stream.listen((Subscription sub) =>
+    //   setState(() =>  _subs.add(sub))
+    // );
+    // is there better way
+    var subs = await getsubs();
+    if (subs != null) {
+      for (var i = 0; i < subs.length; i++) {
+        setState(() => _subs.add(subs[i]));
+      }
+    }
+  }
+  @override
+  Widget build(BuildContext context) => 
+  ListView.builder(
+      itemCount: _subs.length,
+      itemBuilder: (context, index) => 
+        SubscriptionTile(_subs[index]),
+  );
+}
+
+// Future<Stream<Subscription>> getMarket() async {
+//  final String url = 'https://api.bitcoinofthings.com/marketplace';
+
+//  final client = new http.Client();
+//  final streamedRest = await client.send(
+//    http.Request('get', Uri.parse(url))
+//  );
+
+//  return streamedRest.stream
+//      .transform(utf8.decoder)
+//      .transform(json.decoder)
+//      .expand((data) => (data as List))
+//      .map((data) => MarketPublication.fromJSON(data));
+// }
+
+//should be Subscription!
+  Future<List<dynamic>> getsubs() async {
     //get subs from api
     var url = 'https://api.bitcoinofthings.com/getsubs';
+      var usercred = await LocalStorage.getJSON("usercred");
+      //print(usercred);
+      var auth = convert.jsonEncode({"p":usercred["username"], "u":usercred["pass"]});
+      //print(auth);
       var response = await http.post(
         url,
-        body: convert.jsonEncode({"p":mbid, "u":password}),
+        body: auth,
         headers: {HttpHeaders.contentTypeHeader: "application/json"},
         );
       if (response.statusCode == 200) {
         var jsonResponse = convert.jsonDecode(response.body);
+        // data should be List<dynamic>
         var data = jsonResponse["data"];
         if (data != null ) {
-        var itemCount = data.length;
-        print(data);
-        print('Number of subscriptions: $itemCount.');
+          //var itemCount = data.length;
+          //print(data);
+          //print('Number of subscriptions: $itemCount.');
+          //var list = data.map((m) => Subscription.fromJSON(m)).toList();
+          var subs = data
+          .map(
+            (dynamic item) => Subscription.fromJSON(item),
+          );
+          return subs.toList();
         } else {
           print('Not Authorized!');
         }
       } else {
         print('Request failed with status: ${response.statusCode}.');
       }
+      return null;
   }
-}

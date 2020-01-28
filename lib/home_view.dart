@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'components/localStorage.dart';
 import 'signin_page.dart';
 import 'test_page.dart';
 import 'auth/auth_state.dart';
@@ -39,6 +40,7 @@ class HomeView extends StatelessWidget {
   const HomeView(this._streamController);
 
   signOut() {
+    LocalStorage.delete("usercred");
     _streamController.add(AuthenticationState.signedOut());
   }
 

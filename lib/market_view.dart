@@ -7,8 +7,10 @@ import 'models/MarketPublication.dart';
 import 'components/market_pub.dart';
 
 class MarketView extends StatefulWidget {
+
   @override
   MarketState createState() => MarketState();
+
 }
 
 class MarketState extends State<MarketView> {
@@ -18,6 +20,13 @@ class MarketState extends State<MarketView> {
   void initState() {
     super.initState();
     listenForPubs();
+  }
+
+   @override
+   void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   void listenForPubs() async {
