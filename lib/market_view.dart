@@ -59,25 +59,3 @@ Future<Stream<MarketPublication>> getMarket() async {
      .map((data) => MarketPublication.fromJSON(data));
 }
 
-  void fetchMarket() async {
-    var data;
-    //get market/public pubs from api
-    var url = 'https://api.bitcoinofthings.com/listings';
-      var response = await http.get(
-        url
-        );
-      if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
-        data = jsonResponse["data"];
-        if (data != null ) {
-          var itemCount = data.length;
-          print(data);
-          print('Number of pubs: $itemCount.');
-        } else {
-          print('Something went wrong. No data returned.');
-        }
-      } else {
-        print('Request failed with status: ${response.statusCode}.');
-      }
-    return data;
-  }
