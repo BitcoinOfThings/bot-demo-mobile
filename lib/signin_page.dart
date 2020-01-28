@@ -125,10 +125,13 @@ TextEditingController passwordController;
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
-                  height: 155.0,
-                  child: Image.asset(
-                    "assets/logo.png",
+                  height: 175.0,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: Image.asset(
+                    "assets/PubSublogo.png",
                     fit: BoxFit.contain,
+                    ),
                   ),
                 ),
                 SizedBox(height: 45.0),

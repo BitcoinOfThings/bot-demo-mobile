@@ -1,9 +1,9 @@
 //
-// I used this code to explore interacting with Adafruit.io and Streams using Dart.  I am
+// I used this code to explore interacting with mqtt and Streams using Dart.  I am
 // new to Dart.  I am certain the code can use improvement.
 // THE GOAL
 // ========
-// The goal of this code is to subscribe to a topic on Adafruit.io.  As data comes in, the
+// The goal of this code is to subscribe to a topic on mqtt.  As data comes in, the
 // data is put into a Dart stream.  The Dart Stream can then be used by a StreamBuilder widget
 // in the UI.
 //
