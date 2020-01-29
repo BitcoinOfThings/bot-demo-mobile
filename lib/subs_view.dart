@@ -45,6 +45,9 @@ class SubsView extends StatefulWidget {
 
 class SubsState extends State<SubsView> {
   List<Subscription> _subs = <Subscription>[];
+  // TODO: keep GlobalKeys
+  // keep mqtt stream for each sub
+  // one notifier at this level
 
   @override
   void initState() {
@@ -78,13 +81,12 @@ class SubsState extends State<SubsView> {
     Column(
     children: [Expanded(
       child:
-     //<Widget>[
-  ListView.builder(
+      ListView.builder(
       itemCount: _subs.length,
       itemBuilder: (context, index) => 
-        SubscriptionTile(_subs[index]),
-  ),
-    ),
+        SubscriptionTile(index, _subs[index]),
+      ),
+      ),
             RaisedButton(
             child: const Text("Demo Sub"),
             splashColor: Colors.blue,

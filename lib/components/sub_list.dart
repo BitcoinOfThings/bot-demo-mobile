@@ -3,7 +3,9 @@ import '../models/Subscription.dart';
 
 class SubscriptionTile extends StatefulWidget {
   /*final*/ Subscription _sub;
-  SubscriptionTile(this._sub);
+  int _index;
+
+  SubscriptionTile(this._index, this._sub);
 
   @override
   SubscriptionTileState createState() => SubscriptionTileState(this._sub);
