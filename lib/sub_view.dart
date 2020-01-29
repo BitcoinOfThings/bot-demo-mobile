@@ -1,6 +1,7 @@
 // This will be the subscription page
 // in context of on subscription, show that sub messages
 import 'package:flutter/material.dart';
+import 'components/notifications.dart';
 import 'mqtt_stream.dart';
 import 'BitcoinOfThings_feed.dart';
 
@@ -15,8 +16,15 @@ class SubPage extends StatefulWidget {
 class MqttPageState extends State<SubPage> {
   // Handles connecting, subscribing, publishing to BitcoinOfThings
   AppMqttTransactions myMqtt = AppMqttTransactions();
+  Notifications _notifications;
+
   final myTopicController = TextEditingController(text:'demo');
   final myValueController = TextEditingController();
+
+  MqttPageState () {
+    this._notifications = new Notifications();
+    this._notifications.init();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +101,10 @@ class MqttPageState extends State<SubPage> {
           if (reading == null) {
             reading = 'Messages show here when received.';
           }
+          //TODO: need better way!
+          _notifications.show(NotificationMessage(
+            'test',reading
+          ));
           return Text(reading);
         });
   }
