@@ -1,7 +1,5 @@
 // App shell
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:rxdart/rxdart.dart';
 import 'home_page.dart';
 import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';

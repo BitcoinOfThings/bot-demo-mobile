@@ -1,6 +1,7 @@
 // show list of subs for user
 import 'dart:async';
 
+import 'package:bot_demo_mobile/sub_view.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';
@@ -10,17 +11,6 @@ import 'signin_page.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'dart:io';
-
-          //   RaisedButton(
-          //   child: const Text("Demo Sub"),
-          //   splashColor: Colors.blue,
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) 
-          //       => SubPage(title: 'BOT Demo Sub')));
-          //   }
-          // ),
 
 class SubsViewBuilder extends StatelessWidget {
 
@@ -83,12 +73,31 @@ class SubsState extends State<SubsView> {
     }
   }
   @override
-  Widget build(BuildContext context) => 
+  Widget build(BuildContext context) {
+    return 
+    Column(
+    children: [Expanded(
+      child:
+     //<Widget>[
   ListView.builder(
       itemCount: _subs.length,
       itemBuilder: (context, index) => 
         SubscriptionTile(_subs[index]),
-  );
+  ),
+    ),
+            RaisedButton(
+            child: const Text("Demo Sub"),
+            splashColor: Colors.blue,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) 
+                => SubPage(title: 'BOT Demo Sub')));
+            }
+          ),
+    ]
+    );
+  }
 }
 
 // Future<Stream<Subscription>> getMarket() async {
