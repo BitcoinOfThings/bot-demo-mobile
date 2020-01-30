@@ -58,7 +58,6 @@ class PubSubConnection {
     // I liked the explanation in the "Dart & Flutter Asnchronous Tutorial.."
     // https://bit.ly/2Dq12PJ
     //
-    print('Topic:$topic');
     if (await _connectToClient() == true) {
       /// Add the unsolicited disconnection callback
       client.onDisconnected = _onDisconnected;
@@ -122,9 +121,17 @@ class PubSubConnection {
   // with gitHub.
   //
   Future<Map> _getBrokerAndKey() async {
-    // TODO: Check if private.json does not exist or expected key/values are not there.
-    String connect = await rootBundle.loadString('config/private.json');
-    return (json.decode(connect));
+    var configFile = 'config/private.json';
+    try {
+      String connect = await rootBundle.loadString(configFile);
+      return (json.decode(connect));
+    } catch(FlutterError) {
+      return {
+        'broker': "127.0.0.1",
+        'username': "",
+        'key': ""
+      };
+    }
   }
 
   //
@@ -155,14 +162,13 @@ class PubSubConnection {
       server = connectJson['broker'];
       clientId = connectJson['key'];
       username = connectJson['username'];
-      password = 'demo';
-      // TBD Test valid broker and key
+      password = connectJson['key'];
     }
 
-      log.info('in _login....broker  : $server');
-      log.info('in _login....clientId: $clientId');
-      log.info('in _login....username: $username');
-      log.info('in _login....password: $password');
+    log.info('in _login....broker  : $server');
+    log.info('in _login....clientId: $clientId');
+    log.info('in _login....username: $username');
+    log.info('in _login....password: $password');
     // server, client identifier
     client = MqttClient(server, clientId);
     client.port = port;
@@ -199,7 +205,6 @@ class PubSubConnection {
       // from exception above?
       print('Mqtt client null!');
     } else {
-      /// Check we are connected
       if (client.connectionStatus.state == MqttConnectionState.connected) {
         log.info('BOT client connected');
       } else {
@@ -233,7 +238,7 @@ class PubSubConnection {
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
       /// The payload is a byte buffer, this will be specific to the topic
-      BitcoinOfThingsFeed.add(pt);
+      BitcoinOfThingsMux.add(pt);
       log.info(
           'Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       return pt;

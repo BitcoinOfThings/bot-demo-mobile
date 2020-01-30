@@ -3,7 +3,13 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
-class BitcoinOfThingsFeed {
+/*
+* Currently, there will be one stream for all
+* BOT subscriptions. But this may change in future
+* as app needs change.
+* Going to call this thing a Multiplexer for now.
+*/
+class BitcoinOfThingsMux {
   //
   // Both the StreamController and Stream are defined as static. This
   // means they both belong to the class and not to an instance.
@@ -16,17 +22,16 @@ class BitcoinOfThingsFeed {
     BehaviorSubject();
 
   // Expose the stream so a StreamBuilder can use it.
-  // issue is showing sub, nav to other view then go back to sub
-  // view tries to connect to stream again and get error
+  // Issue with default stream, fixed with rxdart.
   // "Bad State: Stream has already been listened to"
-  // static Stream<String> get sensorStream => 
-  //   _feedController.stream.asBroadcastStream();
-  static BehaviorSubject<String> get sensorStream => 
+  static BehaviorSubject<String> get stream => 
     _feedController.stream;
 
-
-//
-// TODO: add takes in a string, but forces the feed to be an int
+  //
+  // TODO: could be string or json message
+  // this method called from PubSubConnection
+  // IOW, all BOT streams are multiplexed
+  // into this one stream. That may change.
   static void add(String value) {
     Logger log = Logger('BitcoinOfThings_feed.dart');
     try {
@@ -34,7 +39,7 @@ class BitcoinOfThingsFeed {
       log.info('---> added value to the Stream... the value is: $value');
     } catch (e) {
       log.severe(
-          '$value was published to the feed.  Error adding to the Stream: $e');
+        '$value was published to the feed.  Error adding to the Stream: $e');
     }
   }
 }

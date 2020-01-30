@@ -6,7 +6,6 @@ import 'package:bot_demo_mobile/sub_view.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';
-import 'components/notifications.dart';
 import 'components/sub_list.dart';
 import 'models/Subscription.dart';
 import 'signin_page.dart';
@@ -46,17 +45,11 @@ class SubsView extends StatefulWidget {
 }
 
 class SubsState extends State<SubsView> {
-  // one notifier for all sub streams
-  Notifications _notifications;
-  List<Subscription> _subs = <Subscription>[];
-  // TODO: keep GlobalKeys
-  // keep mqtt stream for each sub
+  final List<Subscription> _subs = <Subscription>[];
 
   @override
   void initState() {
     super.initState();
-    this._notifications = new Notifications();
-    this._notifications.init();
     listenForSubs();
   }
 
@@ -102,7 +95,7 @@ class SubsState extends State<SubsView> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) 
-                => SubPage(title: 'BOT Demo Sub')));
+                => SubPage(title: "BOT Demo Sub")));
             }
           ),
     ]

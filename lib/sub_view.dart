@@ -1,5 +1,6 @@
 // This will be the subscription page
 // in context of on subscription, show that sub messages
+import 'package:bot_demo_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'components/notifications.dart';
 import 'mqtt_stream.dart';
@@ -16,14 +17,14 @@ class SubPage extends StatefulWidget {
 class MqttPageState extends State<SubPage> {
   // Handles connecting, subscribing, publishing to BitcoinOfThings
   PubSubConnection pubsub = PubSubConnection(null);
-  Notifications _notifications;
+  //Notifications _notifications;
 
   final myTopicController = TextEditingController(text:'demo');
   final myValueController = TextEditingController();
 
   MqttPageState () {
-    this._notifications = new Notifications();
-    this._notifications.init();
+    // this._notifications = new Notifications();
+    // this._notifications.init();
   }
 
   @override
@@ -92,7 +93,7 @@ class MqttPageState extends State<SubPage> {
 
   Widget _subscriptionData() {
     return StreamBuilder(
-        stream: BitcoinOfThingsFeed.sensorStream,
+        stream: BitcoinOfThingsMux.stream,
         builder: (context, snapshot) {
           // if (!snapshot.hasData) {
           //   return CircularProgressIndicator();
@@ -101,8 +102,7 @@ class MqttPageState extends State<SubPage> {
           if (reading == null) {
             reading = 'Messages show here when received.';
           }
-          //TODO: need better way!
-          _notifications.show(NotificationMessage(
+          GlobalNotifier.notifications.show(NotificationMessage(
             'test',reading
           ));
           return Text(reading);
