@@ -1,4 +1,6 @@
 // App shell
+import 'dart:async';
+
 import 'package:bot_demo_mobile/BitcoinOfThings_feed.dart';
 import 'package:flutter/material.dart';
 import 'components/notifications.dart';
@@ -13,15 +15,36 @@ import 'package:stack_trace/stack_trace.dart';
 
 void main() {
   initLogger();
-  wireupBotStreamsToNotifier();
+  GlobalNotifier.wireUp();
   runApp(BOTApp());
 }
 
 // one notifier for all sub streams (for now)
+// could cause memory leaks if not careful
 class GlobalNotifier {
   // anywhere in app call 
   // GlobalNotifier.notifications.show(...)
   static Notifications notifications = new Notifications();
+  static StreamSubscription botMux;
+
+  static void wireUp () {
+    GlobalNotifier.botMux = BitcoinOfThingsMux.stream.listen( (botmsg) {
+      var notemsg = NotificationMessage(
+        'unknown topic', 
+        botmsg);
+      // then just show a notification
+      GlobalNotifier.notifications.show(notemsg);
+    } );
+  }
+
+  static void cancel() { 
+    botMux?.cancel(); 
+    BitcoinOfThingsMux.close();
+  }
+
+  static void pause() { botMux?.pause(); }
+  static void resume() { botMux?.resume(); }
+
 }
 
 class BOTApp extends StatelessWidget {
@@ -57,12 +80,4 @@ void initLogger() {
 // notifications
 void wireupBotStreamsToNotifier() {
   // when we get a bot message into our app
-  BitcoinOfThingsMux.stream.listen( (botmsg) {
-    var notemsg = NotificationMessage(
-      'unknown topic', 
-      botmsg);
-    // then just show a notification
-    GlobalNotifier.notifications.show(notemsg);
-
-  } );
 }

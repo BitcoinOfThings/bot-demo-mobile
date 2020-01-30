@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:bot_demo_mobile/components/notifications.dart';
+import 'package:bot_demo_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'BitcoinOfThings_feed.dart';
 import 'components/localStorage.dart';
 import 'signin_page.dart';
 import 'test_page.dart';
@@ -37,14 +39,13 @@ class HomeViewBuilder extends StatelessWidget {
 // home view will show login or notifications
 class HomeView extends StatelessWidget {
   final StreamController<AuthenticationState> _streamController;
-  final Notifications _notifications = new Notifications();
 
-  HomeView(this._streamController /*, this._notifications*/) {
-    //this._notifications.init();
+  HomeView(this._streamController) {
   }
 
   signOut() {
     LocalStorage.delete("usercred");
+    GlobalNotifier.pause();
     _streamController.add(AuthenticationState.signedOut());
   }
 
@@ -58,7 +59,7 @@ class HomeView extends StatelessWidget {
                   RaisedButton(
                     child: const Text('Show plain notification'),
                     onPressed: () async {
-                      await _notifications.show(NotificationMessage('Pub\$Sub sent you a message','Your message could go here'));
+                      await GlobalNotifier.notifications.show(NotificationMessage('Pub\$Sub sent you a message','Your message could go here'));
                     },
                   ),
 

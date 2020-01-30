@@ -27,6 +27,10 @@ class BitcoinOfThingsMux {
   static BehaviorSubject<String> get stream => 
     _feedController.stream;
 
+  static void close() {
+    _feedController.close();
+  }
+
   //
   // TODO: could be string or json message
   // this method called from PubSubConnection

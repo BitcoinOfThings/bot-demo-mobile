@@ -6,6 +6,7 @@ import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'components/localStorage.dart';
+import 'main.dart';
 
 class SignInPage extends StatefulWidget {
   final StreamController<AuthenticationState> _streamController;
@@ -46,6 +47,7 @@ TextEditingController passwordController;
     if (authcheck) {
       LocalStorage.putJSON("usercred", {"username":username,"pass":pass});
       _streamController.add(AuthenticationState.authenticated());
+      GlobalNotifier.resume();
     } else {
       _streamController.add(AuthenticationState.failed());
     }
