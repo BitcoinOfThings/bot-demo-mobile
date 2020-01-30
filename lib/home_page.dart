@@ -27,6 +27,12 @@ class HomeState extends State<HomePage> {
       new BehaviorSubject();
 
   @override
+  void dispose() {
+    if (_streamController != null) {_streamController.close();}
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length:4,

@@ -16,7 +16,6 @@ class BitcoinOfThingsFeed {
     BehaviorSubject();
 
   // Expose the stream so a StreamBuilder can use it.
-  // TODO: asBroadcastStream might be a hack, or dont use static
   // issue is showing sub, nav to other view then go back to sub
   // view tries to connect to stream again and get error
   // "Bad State: Stream has already been listened to"

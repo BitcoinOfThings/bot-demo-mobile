@@ -15,7 +15,7 @@ class SubPage extends StatefulWidget {
 
 class MqttPageState extends State<SubPage> {
   // Handles connecting, subscribing, publishing to BitcoinOfThings
-  AppMqttTransactions myMqtt = AppMqttTransactions();
+  PubSubConnection pubsub = PubSubConnection(null);
   Notifications _notifications;
 
   final myTopicController = TextEditingController(text:'demo');
@@ -147,15 +147,10 @@ class MqttPageState extends State<SubPage> {
   }
 
   void subscribe(String topic) {
-    myMqtt.subscribe(topic);
+    pubsub.subscribe(topic);
   }
 
   void publish(String topic, String value) {
-    myMqtt.publish(topic, value);
+    pubsub.publish(topic, value);
   }
 }
-
-// void publish(String topic) {
-// AppMqttTransactions mySubscribe = AppMqttTransactions();
-// myPublish.publish(topic,3);
-// }

@@ -29,11 +29,15 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'BitcoinOfThings_feed.dart';
+import 'components/localStorage.dart';
+import 'models/Subscription.dart' as sub;
 
-class AppMqttTransactions {
+class PubSubConnection {
+  //sub will have connection information
+  //for now, support subs. later need pub conx too
+  sub.Subscription _sub;
   Logger log;
-// Constructor
-  AppMqttTransactions() {
+  PubSubConnection(this._sub) {
     // Start logger.  MAKE SURE STRING IS NAME OF DART FILE WHERE
     // CODE IS (in this case the filename is mqtt_stream.dart)
     // TBD: I could not find a way to get the API to return the filename.
@@ -54,6 +58,7 @@ class AppMqttTransactions {
     // I liked the explanation in the "Dart & Flutter Asnchronous Tutorial.."
     // https://bit.ly/2Dq12PJ
     //
+    print('Topic:$topic');
     if (await _connectToClient() == true) {
       /// Add the unsolicited disconnection callback
       client.onDisconnected = _onDisconnected;
@@ -133,22 +138,46 @@ class AppMqttTransactions {
     // I liked the explanation in the "Dart & Flutter Asnchronous Tutorial.."
     // https://bit.ly/2Dq12PJ
 
-    Map connectJson = await _getBrokerAndKey();
-    // TBD Test valid broker and key
-    log.info('in _login....broker  : ${connectJson['broker']}');
-    log.info('in _login....key     : ${connectJson['key']}');
-    log.info('in _login....username: ${connectJson['username']}');
+    String server = '';
+    String clientId = '';
+    String username = '';
+    String password = '';
+    int port = 1883;
+    if (_sub != null) {
+      server = _sub.server;
+      port = _sub.port;
+      clientId = _sub.clientId;
+      username = _sub.username;
+      var usercred = await LocalStorage.getJSON("usercred");
+      password = usercred["pass"];
+    } else {
+      Map connectJson = await _getBrokerAndKey();
+      server = connectJson['broker'];
+      clientId = connectJson['key'];
+      username = connectJson['username'];
+      password = 'demo';
+      // TBD Test valid broker and key
+    }
 
-    client = MqttClient(connectJson['broker'], connectJson['key']);
+      log.info('in _login....broker  : $server');
+      log.info('in _login....clientId: $clientId');
+      log.info('in _login....username: $username');
+      log.info('in _login....password: $password');
+    // server, client identifier
+    client = MqttClient(server, clientId);
+    client.port = port;
+    //client.useWebSocket = true;
     // Turn on mqtt package's logging while in test.
     client.logging(on: true);
     final MqttConnectMessage connMess = MqttConnectMessage()
-        .authenticateAs(connectJson['username'], connectJson['key'])
-        .withClientIdentifier('demo')
+        // username, password
+        .authenticateAs(username, password)
+        // clientid, was demo
+        .withClientIdentifier(clientId)
         .keepAliveFor(60) // Must agree with the keep alive set above or not set
-        .withWillTopic(
-            'willtopic') // If you set this you must set a will message
-        .withWillMessage('My Will message')
+        // .withWillTopic(
+        //     'willtopic') // If you set this you must set a will message
+        // .withWillMessage('My Will message')
         .startClean() // Non persistent session for testing
         .withWillQos(MqttQos.atMostOnce);
     log.info('BOT client connecting....');
@@ -166,15 +195,20 @@ class AppMqttTransactions {
       return client;
     }
 
-    /// Check we are connected
-    if (client.connectionStatus.state == MqttConnectionState.connected) {
-      log.info('BOT client connected');
+    if (client == null) {
+      // from exception above?
+      print('Mqtt client null!');
     } else {
-      /// Use status here rather than state if you also want the broker return code.
-      log.info(
-          'BOT client connection failed - disconnecting, status is ${client.connectionStatus}');
-      client.disconnect();
-      client = null;
+      /// Check we are connected
+      if (client.connectionStatus.state == MqttConnectionState.connected) {
+        log.info('BOT client connected');
+      } else {
+        /// Use status here rather than state if you also want the broker return code.
+        log.info(
+            'BOT client connection failed - disconnecting, status is ${client.connectionStatus}');
+        client.disconnect();
+        client = null;
+      }
     }
     return client;
   }
@@ -204,6 +238,12 @@ class AppMqttTransactions {
           'Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       return pt;
     });
+  }
+
+  Future unsubscribe(String topic) async {
+      client.unsubscribe(this.previousTopic);
+      this.bAlreadySubscribed = false;
+    log.info('Unsubscribed from topic $topic');
   }
 
 //////////////////////////////////////////

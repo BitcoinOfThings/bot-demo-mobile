@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/Subscription.dart';
 
 class SubscriptionTile extends StatefulWidget {
-  /*final*/ Subscription _sub;
-  int _index;
+  final Subscription _sub;
 
-  SubscriptionTile(this._index, this._sub);
+  SubscriptionTile(this._sub);
 
   @override
   SubscriptionTileState createState() => SubscriptionTileState(this._sub);
@@ -13,12 +12,12 @@ class SubscriptionTile extends StatefulWidget {
 
 class SubscriptionTileState extends State<SubscriptionTile> {
   final Subscription _sub;
-  bool _whyonevalue = false;
 
   SubscriptionTileState(this._sub);
 
   _valchanged(val) {
-    setState(() { _whyonevalue = val; });
+    setState(() { this._sub.enabled = val; });
+    this._sub.subscribe();
   }
 
   @override
@@ -26,8 +25,8 @@ class SubscriptionTileState extends State<SubscriptionTile> {
     children: <Widget>[
       SwitchListTile(
         title: Text(_sub.name),
-        subtitle: Text(_sub.topic),
-        value: _whyonevalue,
+        subtitle: Text(_sub.status),
+        value: this._sub?.enabled,
         onChanged: (bool value) { _valchanged(value); },
         // leading: Container(
         //   margin: EdgeInsets.only(left: 6.0),

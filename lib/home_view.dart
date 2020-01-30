@@ -15,7 +15,7 @@ class HomeViewBuilder extends StatelessWidget {
 
   Widget buildUi(BuildContext context, AuthenticationState s) {
     if (s.authenticated) {
-      return HomeView(_streamController);
+      return HomeView(_streamController, new Notifications());
     } else {
       return SignInPage(_streamController);
     }
@@ -36,13 +36,10 @@ class HomeViewBuilder extends StatelessWidget {
 
 // home view will show login or notifications
 class HomeView extends StatelessWidget {
-  //TODO: was final
-  StreamController<AuthenticationState> _streamController;
-  Notifications _notifications;
+  final StreamController<AuthenticationState> _streamController;
+  final Notifications _notifications;
 
-  HomeView(streamController) {
-    this._streamController = streamController;
-    this._notifications = new Notifications();
+  HomeView(this._streamController, this._notifications) {
     this._notifications.init();
   }
 

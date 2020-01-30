@@ -1,10 +1,12 @@
 // show list of subs for user
 import 'dart:async';
 
+import 'package:bot_demo_mobile/mqtt_stream.dart';
 import 'package:bot_demo_mobile/sub_view.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';
+import 'components/notifications.dart';
 import 'components/sub_list.dart';
 import 'models/Subscription.dart';
 import 'signin_page.dart';
@@ -44,14 +46,17 @@ class SubsView extends StatefulWidget {
 }
 
 class SubsState extends State<SubsView> {
+  // one notifier for all sub streams
+  Notifications _notifications;
   List<Subscription> _subs = <Subscription>[];
   // TODO: keep GlobalKeys
   // keep mqtt stream for each sub
-  // one notifier at this level
 
   @override
   void initState() {
     super.initState();
+    this._notifications = new Notifications();
+    this._notifications.init();
     listenForSubs();
   }
 
@@ -71,7 +76,10 @@ class SubsState extends State<SubsView> {
     var subs = await getsubs();
     if (subs != null) {
       for (var i = 0; i < subs.length; i++) {
-        setState(() => _subs.add(subs[i]));
+        // todo associate sub with mqtt stream
+        var s = subs[i];
+        s.pubsub = new PubSubConnection(s);
+        setState(() => _subs.add(s));
       }
     }
   }
@@ -84,7 +92,7 @@ class SubsState extends State<SubsView> {
       ListView.builder(
       itemCount: _subs.length,
       itemBuilder: (context, index) => 
-        SubscriptionTile(index, _subs[index]),
+        SubscriptionTile(_subs[index]),
       ),
       ),
             RaisedButton(
@@ -135,10 +143,7 @@ class SubsState extends State<SubsView> {
         // data should be List<dynamic>
         var data = jsonResponse["data"];
         if (data != null ) {
-          //var itemCount = data.length;
-          //print(data);
-          //print('Number of subscriptions: $itemCount.');
-          //var list = data.map((m) => Subscription.fromJSON(m)).toList();
+          print(data);
           var subs = data
           .map(
             (dynamic item) => Subscription.fromJSON(item),
