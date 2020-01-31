@@ -44,7 +44,11 @@ static buildItem(context, index) {
 }
 
   static Widget eventsDisplay() {
-    return Column(
+    return Container(
+      margin: EdgeInsets.all(20),
+      child:
+
+      Column(
       children: <Widget>[
         Flexible(
         child: new ListView.builder(
@@ -53,10 +57,10 @@ static buildItem(context, index) {
           itemBuilder: ( context, index ) =>
             buildItem(context, index)
           ,)
-      ,)
-    ],)
-    ;
-  }
-
+        )
+      ]
+      )
+    )
+  ;}
 
 }

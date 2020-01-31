@@ -42,7 +42,11 @@ class PubsView extends StatefulWidget {
   PubsState createState() => PubsState();
 }
 
-class PubsState extends State<PubsView> {
+class PubsState extends State<PubsView> 
+  with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   List<Publication> _pubs = <Publication>[];
 
   @override
@@ -69,12 +73,14 @@ class PubsState extends State<PubsView> {
   }
 
   @override
-  Widget build(BuildContext context) => 
-  ListView.builder(
-      itemCount: _pubs.length,
-      itemBuilder: (context, index) => 
-        PublicationTile(_pubs[index]),
-  );
+  Widget build(BuildContext context) {
+    super.build(context);
+    return ListView.builder(
+        itemCount: _pubs.length,
+        itemBuilder: (context, index) => 
+          PublicationTile(_pubs[index]),
+    );
+  }
 }
 
 Future<Stream<Publication>> getpubs() async {

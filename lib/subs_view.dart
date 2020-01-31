@@ -1,6 +1,5 @@
 // show list of subs for user
 import 'dart:async';
-
 import 'mqtt_stream.dart';
 import 'sub_view.dart';
 import 'package:flutter/material.dart';
@@ -29,13 +28,13 @@ class SubsViewBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new StreamBuilder<AuthenticationState>(
-        stream: _streamController.stream,
-        initialData: new AuthenticationState.initial(),
-        builder: (BuildContext context,
-            AsyncSnapshot<AuthenticationState> snapshot) {
-          final state = snapshot.data;
-          return buildUi(context, state);
-        });
+      stream: _streamController.stream,
+      initialData: new AuthenticationState.initial(),
+      builder: (BuildContext context,
+          AsyncSnapshot<AuthenticationState> snapshot) {
+        final state = snapshot.data;
+        return buildUi(context, state);
+      });
   }
 }
 
@@ -44,13 +43,23 @@ class SubsView extends StatefulWidget {
   SubsState createState() => SubsState();
 }
 
-class SubsState extends State<SubsView> {
+class SubsState extends State<SubsView>
+  with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   final List<Subscription> _subs = <Subscription>[];
 
   @override
   void initState() {
     super.initState();
+    //print('INITSTATE');
     listenForSubs();
+  }
+  @override
+  void dispose() {
+    //print('DISPOSE');
+    super.dispose();
   }
 
    @override
@@ -76,6 +85,7 @@ class SubsState extends State<SubsView> {
   }
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return 
     Column(
     children: [Expanded(
@@ -86,16 +96,16 @@ class SubsState extends State<SubsView> {
         SubscriptionTile(_subs[index]),
       ),
       ),
-            RaisedButton(
-            child: const Text("Demo Sub"),
-            splashColor: Colors.blue,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) 
-                => SubPage(title: "BOT Demo Sub")));
-            }
-          ),
+        RaisedButton(
+        child: const Text("Demo Sub"),
+        splashColor: Colors.blue,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) 
+            => SubPage(title: "BOT Demo Sub")));
+        }
+      ),
     ]
     );
   }

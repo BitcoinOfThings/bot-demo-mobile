@@ -61,7 +61,7 @@ class BOTApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(title: 'uPub\$ub Mobile'),
+      home: HomePage(title: 'uPub\$ub'),
     );
   }
 }
