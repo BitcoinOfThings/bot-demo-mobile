@@ -24,6 +24,7 @@
 // can interact with the data.
 //
 //
+import 'app_events.dart';
 import 'models/pubsub_base.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
@@ -95,6 +96,7 @@ class PubSubConnection {
   /// The subscribed callback
   void _onSubscribed(String topic) {
     log.info('Subscription confirmed for topic $topic');
+    AppEvents.publish('Subscribed to $topic');
     this.bAlreadySubscribed = true;
     this.previousTopic = topic;
   }
@@ -105,13 +107,13 @@ class PubSubConnection {
     if (client.connectionStatus.returnCode == MqttConnectReturnCode.solicited) {
       log.info(':OnDisconnected callback is solicited, this is correct');
     }
-    // RTFM. Do not call disconnect from onDisconnected
-    //client.disconnect();
+    AppEvents.publish('Disconnected');
   }
 
   /// The successful connect callback
   void _onConnected() {
     log.info('OnConnected client callback - Client connection was sucessful');
+    AppEvents.publish('Connected to BOT service');
   }
 
   //
@@ -196,6 +198,7 @@ class PubSubConnection {
       await client.connect();
     } on Exception catch (e) {
       log.severe('EXCEPTION::client exception - $e');
+      AppEvents.publish('Error $e');
       client.disconnect();
       client = null;
       return client;
@@ -211,6 +214,7 @@ class PubSubConnection {
         /// Use status here rather than state if you also want the broker return code.
         log.info(
             'BOT client connection failed - disconnecting, status is ${client.connectionStatus}');
+        AppEvents.publish('Connection failed ${client.connectionStatus}');
         client.disconnect();
         client = null;
       }
@@ -246,9 +250,10 @@ class PubSubConnection {
   }
 
   Future unsubscribe(String topic) async {
-      client.unsubscribe(this.previousTopic);
-      this.bAlreadySubscribed = false;
+    client.unsubscribe(this.previousTopic);
+    this.bAlreadySubscribed = false;
     log.info('Unsubscribed from topic $topic');
+    AppEvents.publish('Unsubscribed from topic $topic');
   }
 
 //////////////////////////////////////////

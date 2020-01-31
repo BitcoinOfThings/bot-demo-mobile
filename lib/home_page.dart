@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:upubsub_mobile/app_events.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';
 import 'components/notifications.dart';
@@ -70,21 +71,22 @@ class HomeState extends State<HomePage> {
       IconButton(
         icon: const Icon(
           Icons.notifications),
-          iconSize: 35,
+          iconSize: 30,
           tooltip: 'settings',
           onPressed: () {
             GlobalNotifier.notifications.show(NotificationMessage('Pub\$Sub sent you a message','Your message could go here'));
+            AppEvents.publish('User tested notifications');
           }),
       IconButton(
         icon: const Icon(
           Icons.settings),
-          iconSize: 35,
+          iconSize: 30,
           tooltip: 'settings',
           onPressed: () {}),
       IconButton(
         icon: const Icon(
           Icons.exit_to_app),
-          iconSize: 35,
+          iconSize: 30,
           tooltip: 'Logout',
           onPressed: signOut),
     ];

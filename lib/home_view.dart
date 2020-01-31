@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'components/notifications.dart';
-import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'app_events.dart';
 import 'signin_page.dart';
 import 'test_page.dart';
 import 'auth/auth_state.dart';
@@ -43,28 +42,29 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
   return Center(
         child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
+          child: AppEvents.eventsDisplay()
+        //   Column(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: <Widget>[
 
-            RaisedButton(
-            child: const Text("Notifications go here"),
-            splashColor: Colors.blue,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) 
-                => TestPage(title: 'Test Notification')),
-              );
-            },
-          ),
-        //   RaisedButton(
-        //   child: Text('Sign Out'),
-        //   onPressed: signOut,
-        // ),
+        //     RaisedButton(
+        //     child: const Text("Notifications go here"),
+        //     splashColor: Colors.blue,
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(builder: (context) 
+        //         => TestPage(title: 'Test Notification')),
+        //       );
+        //     },
+        //   ),
+        // //   RaisedButton(
+        // //   child: Text('Sign Out'),
+        // //   onPressed: signOut,
+        // // ),
 
-            ]
-            )
+        //     ]
+        //     )
         )
     );
   }
