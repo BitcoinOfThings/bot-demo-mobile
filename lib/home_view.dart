@@ -4,7 +4,6 @@ import 'package:bot_demo_mobile/components/notifications.dart';
 import 'package:bot_demo_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'BitcoinOfThings_feed.dart';
 import 'components/localStorage.dart';
 import 'signin_page.dart';
 import 'test_page.dart';
@@ -40,8 +39,7 @@ class HomeViewBuilder extends StatelessWidget {
 class HomeView extends StatelessWidget {
   final StreamController<AuthenticationState> _streamController;
 
-  HomeView(this._streamController) {
-  }
+  HomeView(this._streamController);
 
   signOut() {
     LocalStorage.delete("usercred");

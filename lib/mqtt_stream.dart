@@ -24,20 +24,20 @@
 // can interact with the data.
 //
 //
+import 'package:bot_demo_mobile/models/pubsub_base.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'BitcoinOfThings_feed.dart';
 import 'components/localStorage.dart';
-import 'models/Subscription.dart' as sub;
 
 class PubSubConnection {
   //sub will have connection information
   //for now, support subs. later need pub conx too
-  sub.Subscription _sub;
+  BasePubSub _pubsub;
   Logger log;
-  PubSubConnection(this._sub) {
+  PubSubConnection(this._pubsub) {
     // Start logger.  MAKE SURE STRING IS NAME OF DART FILE WHERE
     // CODE IS (in this case the filename is mqtt_stream.dart)
     // TBD: I could not find a way to get the API to return the filename.
@@ -150,11 +150,11 @@ class PubSubConnection {
     String username = '';
     String password = '';
     int port = 1883;
-    if (_sub != null) {
-      server = _sub.server;
-      port = _sub.port;
-      clientId = _sub.clientId;
-      username = _sub.username;
+    if (_pubsub != null) {
+      server = _pubsub.server;
+      port = _pubsub.port;
+      clientId = _pubsub.clientId;
+      username = _pubsub.username;
       var usercred = await LocalStorage.getJSON("usercred");
       password = usercred["pass"];
     } else {
