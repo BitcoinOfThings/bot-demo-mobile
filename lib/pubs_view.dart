@@ -1,6 +1,7 @@
 // to show list of publications user has created
 import 'dart:async';
 import 'dart:io';
+import 'package:bot_demo_mobile/mqtt_stream.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';
@@ -57,11 +58,14 @@ class PubsState extends State<PubsView> {
     }
   }
 
+  putPubInState (Publication pub) {
+    pub.pubsub = new PubSubConnection(pub);
+    setState(() =>  _pubs.add(pub));
+  }
+
   void listenForPubs() async {
     final Stream<Publication> stream = await getpubs();
-    stream.listen((Publication pub) =>
-      setState(() =>  _pubs.add(pub))
-    );
+    stream.listen(putPubInState);
   }
 
   @override

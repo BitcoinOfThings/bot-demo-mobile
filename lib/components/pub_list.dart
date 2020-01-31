@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import '../models/publication.dart';
 
-class PublicationTile extends StatelessWidget {
+class PublicationTile extends StatefulWidget {
   final Publication _pub;
+
   PublicationTile(this._pub);
 
+  @override
+  PublicationTileState createState() => PublicationTileState(this._pub);
+}
+
+class PublicationTileState extends State<PublicationTile> {
+  final Publication _pub;
+  PublicationTileState(this._pub);
+
   _valchanged(val) {
-    this._pub.enabled = val;
+    // setstate required?
+    setState(() { this._pub.enabled = val; });
     this._pub.subscribe();
   }
 

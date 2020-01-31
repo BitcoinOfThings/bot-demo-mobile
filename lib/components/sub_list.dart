@@ -16,6 +16,7 @@ class SubscriptionTileState extends State<SubscriptionTile> {
   SubscriptionTileState(this._sub);
 
   _valchanged(val) {
+    // setstate required?
     setState(() { this._sub.enabled = val; });
     this._sub.subscribe();
   }

@@ -65,11 +65,9 @@ class SubsState extends State<SubsView> {
     // stream.listen((Subscription sub) =>
     //   setState(() =>  _subs.add(sub))
     // );
-    // is there better way
     var subs = await getsubs();
     if (subs != null) {
       for (var i = 0; i < subs.length; i++) {
-        // todo associate sub with mqtt stream
         var s = subs[i];
         s.pubsub = new PubSubConnection(s);
         setState(() => _subs.add(s));
