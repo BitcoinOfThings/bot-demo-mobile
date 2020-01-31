@@ -1,7 +1,6 @@
 // App shell
 import 'dart:async';
-
-import 'package:bot_demo_mobile/BitcoinOfThings_feed.dart';
+import 'package:upubsub_mobile/BitcoinOfThings_feed.dart';
 import 'package:flutter/material.dart';
 import 'components/notifications.dart';
 import 'home_page.dart';
@@ -62,7 +61,7 @@ class BOTApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(title: 'Bitcoin Of Things (BOT) Mobile'),
+      home: HomePage(title: 'uPub\$ub Mobile'),
     );
   }
 }

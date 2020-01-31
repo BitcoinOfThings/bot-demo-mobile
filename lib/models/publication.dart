@@ -1,5 +1,5 @@
 
-import 'package:bot_demo_mobile/models/pubsub_base.dart';
+import './pubsub_base.dart';
 
 class Publication extends BasePubSub {
   // use username instead of user

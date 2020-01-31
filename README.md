@@ -1,16 +1,15 @@
 [![Codemagic build status](https://api.codemagic.io/apps/5ddad9aaeda3b30d6aa2a615/5ddad9aaeda3b30d6aa2a614/status_badge.svg)](https://codemagic.io/apps/5ddad9aaeda3b30d6aa2a615/5ddad9aaeda3b30d6aa2a614/latest_build)
 
-# [Bitcoin Of Things](https://bitcoinofthings.com) mobile demo
-  This is a demo mobile application written in Flutter that connects your phone to the [Bitcoin Of Things IOT service](https://bitcoinofthings.com).
+# [uPub$ub](https://upubsub.com) mobile starter app
+  This is a starter mobile application written in Flutter that connects your phone to the [uPub$ub Service](https://upubsub.com).
 
 
-## Its easy to try the BitcoinOfThings IOT service
-  1) Open the mobile app, make sure topic is set to 'demo', then click Subscribe
-  2) On another device or desktop machine, open the web page https://bitcoinofthings.com/send, make sure the topic is set to 'demo'. Enter a message and click Submit.
-  
-After a short moment, the message you sent from BitcoinOfThings site should appear on your mobile device.
+## Use the starter app - then make your own app
 
-Your message was recorded on the blockchain and used to contol your device.
+TODO: document steps to use the app.
+You need to create an account at upubsub.com and create an API login  
+Then you can login from the mobile app
+with the API login and see your publications and subscriptions.
 
 See the web site for more sample applications and ideas for controlling your devices at home and on the go, all recorded on Bitcoin and the [BitcoinOfThings](https://bitcoinofthings.com).
 

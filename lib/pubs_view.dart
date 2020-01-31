@@ -1,7 +1,7 @@
 // to show list of publications user has created
 import 'dart:async';
 import 'dart:io';
-import 'package:bot_demo_mobile/mqtt_stream.dart';
+import 'mqtt_stream.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';

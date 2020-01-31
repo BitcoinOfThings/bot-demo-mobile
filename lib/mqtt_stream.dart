@@ -24,7 +24,7 @@
 // can interact with the data.
 //
 //
-import 'package:bot_demo_mobile/models/pubsub_base.dart';
+import 'models/pubsub_base.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';

@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'auth/auth_state.dart';
+import 'components/localStorage.dart';
+import 'components/notifications.dart';
 import 'home_view.dart';
+import 'main.dart';
 import 'subs_view.dart';
 import 'pubs_view.dart';
 import 'market_view.dart';
@@ -32,6 +35,14 @@ class HomeState extends State<HomePage> {
     super.dispose();
   }
 
+  //signout/logout from app
+  signOut() {
+    print("SIGNING OUT!");
+    LocalStorage.delete("usercred");
+    GlobalNotifier.pause();
+    _streamController.add(AuthenticationState.signedOut());
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -39,12 +50,13 @@ class HomeState extends State<HomePage> {
       child: Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: appActions(),
         bottom: TabBar(
           tabs: <Widget>[
-            Text('Home'),
-            Text('Subs'),
-            Text('Pubs'),
-            Text('Market')
+            Tab(text:'Home', icon: Icon(Icons.home)),
+            Tab(text:'Subs', icon: Icon(Icons.subscriptions)),
+            Tab(text:'Pubs', icon: Icon(Icons.publish)),
+            Tab(text:'Market', icon: Icon(Icons.view_list))
           ],
         ),
       ),
@@ -52,16 +64,42 @@ class HomeState extends State<HomePage> {
     ),
     );
   }
-}
 
-Widget _body(context, authController) {
-  return TabBarView(
-    children: <Widget>[
-      new HomeViewBuilder(authController),
-      new SubsViewBuilder(authController),
-      new PubsViewBuilder(authController),
-      //marketview does not need auth
-      new MarketView()
-    ],
-    );
+  List<Widget> appActions () {
+    return <Widget>[
+      IconButton(
+        icon: const Icon(
+          Icons.notifications),
+          iconSize: 35,
+          tooltip: 'settings',
+          onPressed: () {
+            GlobalNotifier.notifications.show(NotificationMessage('Pub\$Sub sent you a message','Your message could go here'));
+          }),
+      IconButton(
+        icon: const Icon(
+          Icons.settings),
+          iconSize: 35,
+          tooltip: 'settings',
+          onPressed: () {}),
+      IconButton(
+        icon: const Icon(
+          Icons.exit_to_app),
+          iconSize: 35,
+          tooltip: 'Logout',
+          onPressed: signOut),
+    ];
+  }
+
+  Widget _body(context, authController) {
+    return TabBarView(
+      children: <Widget>[
+        new HomeViewBuilder(authController),
+        new SubsViewBuilder(authController),
+        new PubsViewBuilder(authController),
+        //marketview does not need auth
+        new MarketView()
+      ],
+      );
+  }
+
 }

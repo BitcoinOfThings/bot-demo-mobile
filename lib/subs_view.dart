@@ -1,8 +1,8 @@
 // show list of subs for user
 import 'dart:async';
 
-import 'package:bot_demo_mobile/mqtt_stream.dart';
-import 'package:bot_demo_mobile/sub_view.dart';
+import 'mqtt_stream.dart';
+import 'sub_view.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';

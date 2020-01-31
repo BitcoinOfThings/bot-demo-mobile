@@ -1,5 +1,5 @@
-name: bot_demo_mobile
-description: Mobile (and web) client to test Bitcoin Of Things Service.
+name: upubsub_mobile
+description: Mobile client to test uPub$ub and BOT Service.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43

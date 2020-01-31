@@ -1,4 +1,4 @@
-import 'package:bot_demo_mobile/models/pubsub_base.dart';
+import './pubsub_base.dart';
 
 
 class Subscription extends BasePubSub {

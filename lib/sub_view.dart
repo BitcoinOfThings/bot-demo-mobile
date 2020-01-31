@@ -1,6 +1,6 @@
 // This will be the subscription page
 // in context of on subscription, show that sub messages
-import 'package:bot_demo_mobile/main.dart';
+import 'main.dart';
 import 'package:flutter/material.dart';
 import 'components/notifications.dart';
 import 'mqtt_stream.dart';
