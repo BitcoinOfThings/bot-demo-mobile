@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'models/MarketPublication.dart';
 import 'components/market_pub.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MarketView extends StatefulWidget {
 
@@ -39,9 +40,25 @@ class MarketState extends State<MarketView> {
   Widget build(BuildContext context) => 
   ListView.builder(
       itemCount: _pubs.length,
-      itemBuilder: (context, index) => 
-        MarketPublicationTile(_pubs[index]),
+      itemBuilder: (context, index) {
+        var pub = _pubs[index];
+        return InkWell(
+          onTap: () => onTapped(pub),
+          child: MarketPublicationTile(pub)
+        );
+      },
   );
+}
+
+onTapped(MarketPublication pub) async {
+  //GlobalNotifier.show('You pressed ${pub.name}');
+    var pubid = pub.id;
+    var url = 'https://upubsub.com/sub/$pubid';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
 }
 
 Future<Stream<MarketPublication>> getMarket() async {

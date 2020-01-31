@@ -37,6 +37,13 @@ class GlobalNotifier {
     } );
   }
 
+  static void show(something) {
+    var notemsg = NotificationMessage(
+        'You ought to know...', 
+        something);
+    GlobalNotifier.notifications.show(notemsg);
+  }
+
   static void cancel() { 
     botMux?.cancel(); 
     BitcoinOfThingsMux.close();
