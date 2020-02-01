@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:upubsub_mobile/app_events.dart';
+import 'package:upubsub_mobile/components/web_link.dart';
+import 'package:upubsub_mobile/helpers/urllauncher.dart';
 import 'dart:async';
 import 'auth/auth_state.dart';
 import 'dart:convert' as convert;
@@ -24,10 +27,9 @@ class SignInPageState extends State<SignInPage> {
 
   SignInPageState(this._streamController);
 
-TextEditingController emailController;
-TextEditingController passwordController;
+  TextEditingController emailController;
+  TextEditingController passwordController;
   
-
   @override
   void initState() {
     super.initState();
@@ -47,9 +49,11 @@ TextEditingController passwordController;
     if (authcheck) {
       LocalStorage.putJSON("usercred", {"username":username,"pass":pass});
       _streamController.add(AuthenticationState.authenticated());
+      AppEvents.publish('User logged in');
       GlobalNotifier.resume();
     } else {
       _streamController.add(AuthenticationState.failed());
+      AppEvents.publish('Login failed');
     }
   }
 
@@ -127,26 +131,20 @@ TextEditingController passwordController;
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
-                  height: 175.0,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Image.asset(
-                    "assets/PubSublogo.png",
-                    fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 45.0),
+                  height: 45.0,
+                  child:webLink('Use your API login from the web site')),
+                SizedBox(height: 1.0),
                 emailField,
-                SizedBox(height: 25.0),
+                SizedBox(height: 15.0),
                 passwordField,
-                SizedBox(
-                  height: 35.0,
-                ),
+                SizedBox(height: 15.0),
                 loginButon,
+                SizedBox(height: 15.0),
                 SizedBox(
-                  height: 15.0,
-                ),
+                  height: 75.0,
+                  child:webLink('Create API login on web site')),
+                SizedBox(height: 5.0),
+                pubsubLogo(),
               ],
             ),
           ),
@@ -155,4 +153,21 @@ TextEditingController passwordController;
         )
     );
   }
+
+Widget pubsubLogo () => 
+  SizedBox(
+    height: 175.0,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(20.0),
+      child: GestureDetector(
+        onTap: () { UrlLauncher.goHome(); }, // handle your image tap here
+        child: Image.asset(
+      "assets/PubSublogo.png",
+      fit: BoxFit.contain,
+      ),
+      ),
+    ),
+  );
+
+
 }

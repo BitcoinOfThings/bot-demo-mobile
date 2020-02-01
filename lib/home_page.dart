@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:upubsub_mobile/app_events.dart';
+import 'package:upubsub_mobile/helpers/urllauncher.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';
 import 'components/notifications.dart';
@@ -53,6 +54,7 @@ class HomeState extends State<HomePage> {
         title: Text(widget.title),
         actions: appActions(),
         bottom: TabBar(
+          indicatorColor: Colors.amber,
           tabs: <Widget>[
             Tab(text:'Home', icon: Icon(Icons.home)),
             Tab(text:'Subs', icon: Icon(Icons.subscriptions)),
@@ -68,6 +70,14 @@ class HomeState extends State<HomePage> {
 
   List<Widget> appActions () {
     return <Widget>[
+      IconButton(
+        icon: const Icon(
+          Icons.link),
+          iconSize: 30,
+          tooltip: 'web site',
+          onPressed: () {
+            UrlLauncher.goHome();
+          }),
       IconButton(
         icon: const Icon(
           Icons.notifications),
@@ -95,10 +105,11 @@ class HomeState extends State<HomePage> {
   Widget _body(context, authController) {
     return TabBarView(
       children: <Widget>[
+        // home page might not need auth either?
         new HomeViewBuilder(authController),
         new SubsViewBuilder(authController),
         new PubsViewBuilder(authController),
-        //marketview does not need auth
+        // marketview does not need auth
         new MarketView()
       ],
       );

@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'helpers/urllauncher.dart';
 import 'models/MarketPublication.dart';
 import 'components/market_pub.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class MarketView extends StatefulWidget {
 
@@ -51,14 +51,7 @@ class MarketState extends State<MarketView> {
 }
 
 onTapped(MarketPublication pub) async {
-  //GlobalNotifier.show('You pressed ${pub.name}');
-    var pubid = pub.id;
-    var url = 'https://upubsub.com/sub/$pubid';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+  UrlLauncher.launch('sub/${pub.id}');
 }
 
 Future<Stream<MarketPublication>> getMarket() async {
