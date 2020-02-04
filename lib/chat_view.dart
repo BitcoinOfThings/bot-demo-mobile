@@ -1,9 +1,8 @@
 // Show chat
-// 1. fix top scrolling
+// 1. fix scrolling, in general
 // 2. allow send coin
 // 3. allow send message without subscription. how?
-// 4. do not popup chat notification
-
+// ============================
 import 'helpers/constants.dart';
 import 'dart:async';
 import 'dart:io';
@@ -11,9 +10,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:dash_chat/dash_chat.dart';
+import 'chat/dash_chat.dart';
 import 'package:upubsub_mobile/models/Subscription.dart';
-import 'BitcoinOfThings_feed.dart';
 import 'components/localStorage.dart';
 import 'mqtt_stream.dart';
 
@@ -71,11 +69,17 @@ class _ChatState extends State<ChatView> {
         'status': "active", 'expires': "2020-03-02T22:44:25.625Z"
         }
       );
+    this._sub.setSingleplexStream();
     this._sub.pubsub = new PubSubConnection(this._sub);
     this._sub.enabled = true;
     await this._sub.subscribe();
-    onSend(new ChatMessage(text:"Welcome to Pub\$ub support channel.", 
-      user: this._me));
+    var welcome = ChatMessage(text:"Welcome to Pub\$ub support chat. You may ask your support question here. Someone should be available shortly to answer.", 
+      user: this._bot);
+    _sub.stream.add(
+      StreamMessage(
+        _sub.topic,
+        jsonEncode(welcome.toJson())
+    ));
 
   }
 
@@ -117,12 +121,16 @@ class _ChatState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Pub\$ub Support Chat"),
-      ),
-      body: 
-      FutureBuilder<void>(
+    return 
+    // Scaffold(
+      // appBar: AppBar(
+      //   title: Text("Pub\$ub Support Chat"),
+      // ),
+      // body: 
+      Container(
+//        child: Expanded(
+          child:
+          FutureBuilder<void>(
         future: getUser(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
@@ -132,13 +140,14 @@ class _ChatState extends State<ChatView> {
           }
         }
       )
+//      )
     );
   }
 
 Widget _chatStream() {
   return
     StreamBuilder(
-      stream: BitcoinOfThingsMux.stream,
+      stream: _sub.stream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return waiting();
@@ -171,12 +180,17 @@ Widget _chatStream() {
             dateFormat: DateFormat('yyyy-MMM-dd'),
             timeFormat: DateFormat('HH:mm'),
             messages: messages,
-            showUserAvatar: false,
+            showUserAvatar: true,
             showAvatarForEveryMessage: false,
-            scrollToBottom: false,
+            scrollToBottom: true,
             onPressAvatar: (ChatUser user) {
               // todo pop up menu
               print("OnPressAvatar: ${user.name}");
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) => 
+                    _buildAvatarDialog(user),
+              );
             },
             onLongPressAvatar: (ChatUser user) {
               print("OnLongPressAvatar: ${user.name}");
@@ -235,8 +249,10 @@ Widget _chatStream() {
                   );
                   if (result != null) {
                     // when user selected an image... 
-                    ChatMessage image = new ChatMessage(text: null, user: _me, 
-                      image: await result.readAsString());
+                    var bytes = await result.readAsBytes();
+                    // set text as empty string, null produces exception
+                    ChatMessage image = new ChatMessage(text: '', user: _me, 
+                      image: base64Encode(bytes));
                     onSend(image);                      
                   }
                 },
@@ -246,4 +262,26 @@ Widget _chatStream() {
         }
       });
     }
+
+  Widget _buildAvatarDialog(ChatUser user) {
+    return new AlertDialog(
+      title: Text(user.name),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('Send Bitcoin...'),
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Close'),
+        ),
+      ],
+    );
+  }
 }

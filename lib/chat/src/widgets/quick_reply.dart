@@ -46,7 +46,7 @@ class QuickReply extends StatelessWidget {
                     ? quickReplyTextStyle
                     : TextStyle(
                         color: Theme.of(context).accentColor,
-                        fontSize: 12.0,
+                        fontSize: 14.0,
                       ),
               ),
             ),

@@ -177,7 +177,7 @@ class _MessageListViewState extends State<MessageListView> {
                                           .format(widget.messages[i].createdAt),
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 12.0,
+                                    fontSize: 16.0,
                                   ),
                                 ),
                               ),

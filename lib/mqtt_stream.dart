@@ -31,7 +31,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-import 'BitcoinOfThings_feed.dart';
+//import 'BitcoinOfThings_feed.dart';
 import 'components/localStorage.dart';
 
 // Represents a stream message receied from BOT Server
@@ -50,10 +50,10 @@ class StreamMessage {
 }
 
 class PubSubConnection {
-  //sub will have connection information
-  //for now, support subs. later need pub conx too
+  //pubsub object will have connection information
   BasePubSub _pubsub;
   Logger log;
+
   PubSubConnection(this._pubsub) {
     // Start logger.  MAKE SURE STRING IS NAME OF DART FILE WHERE
     // CODE IS (in this case the filename is mqtt_stream.dart)
@@ -260,7 +260,9 @@ class PubSubConnection {
 
       /// The payload is a byte buffer, this will be specific to the topic
       StreamMessage sMess = StreamMessage(c[0].topic, pt);
-      BitcoinOfThingsMux.add(sMess);
+      // TODO: do all bot messages come through here?
+      // might need to compare topics
+      _pubsub.stream.add(sMess);
       log.info(
           'Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       return pt;

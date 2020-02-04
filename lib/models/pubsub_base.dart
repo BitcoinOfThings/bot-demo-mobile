@@ -1,10 +1,30 @@
 // base class for pubsub
+import 'dart:async';
+
+import 'package:rxdart/subjects.dart';
+import 'package:upubsub_mobile/BitcoinOfThings_feed.dart';
+
 import '../mqtt_stream.dart';
 
 // both sub and pub can open connection to server
 // publication can be subscribed to by the pub owner
 // as a general policy of the platform
 abstract class BasePubSub {
+
+  StreamController<StreamMessage> _streamController;
+  // this is the stream to pipe messages into
+  // if null then default to BOT Mux
+  // if specified then stream is only for one topic
+  BehaviorSubject<StreamMessage> _stream;
+
+  set stream (s) { _stream = s; }
+
+  BehaviorSubject<StreamMessage> get stream {
+    if (_stream == null) {
+      return BitcoinOfThingsMux.stream;
+    }
+    return _stream;
+  }
 
   final String id;
   final String username;
@@ -34,6 +54,13 @@ abstract class BasePubSub {
   set pubsub (PubSubConnection ps) { this._pubsub = ps;}
 
   BasePubSub(this.id, this.username, this.topic);
+
+  // makes this into a single topic stream
+  // listen to .stream for messages on one topic
+  setSingleplexStream() {
+    this._streamController = new BehaviorSubject();
+    this._stream = _streamController.stream;
+  }
 
   subscribe() async {
       try {

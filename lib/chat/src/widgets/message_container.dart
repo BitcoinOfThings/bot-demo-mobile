@@ -51,11 +51,20 @@ class MessageContainer extends StatelessWidget {
     this.isUser,
   });
 
+// TODO: not quite working. not sure why chat doesnt
+// display images
+  String imageFromMessage(message) {
+    var img = UriData.fromString(message.image);
+    if (img.isBase64) return utf8.decode(base64.decode(message.image));
+    return message.image;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.8,
+        // have to adjust this width is changing avatar
+        maxWidth: MediaQuery.of(context).size.width * 0.75,
       ),
       child: Container(
         decoration: messageContainerDecoration != null
@@ -83,10 +92,12 @@ class MessageContainer extends StatelessWidget {
             if (messageTextBuilder != null)
               messageTextBuilder(message.text)
             else
+              //This is the default render for messages
               ParsedText(
                 parse: parsePatterns,
                 text: message.text,
                 style: TextStyle(
+                  fontSize: 20,
                   color: message.user.color != null
                       ? message.user.color
                       : isUser ? Colors.white70 : Colors.black87,
@@ -103,7 +114,8 @@ class MessageContainer extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.7,
                     fit: BoxFit.contain,
                     placeholder: kTransparentImage,
-                    image: message.image,
+                    //todo: check if image is base64
+                    image: imageFromMessage(message),
                   ),
                 ),
             if (messageTimeBuilder != null)
@@ -120,7 +132,7 @@ class MessageContainer extends StatelessWidget {
                       ? timeFormat.format(message.createdAt)
                       : DateFormat('HH:mm:ss').format(message.createdAt),
                   style: TextStyle(
-                    fontSize: 10.0,
+                    fontSize: 12.0,
                     color: message.user.color != null
                         ? message.user.color
                         : isUser ? Colors.white70 : Colors.black87,
