@@ -1,3 +1,9 @@
+// Show chat
+// 1. fix top scrolling
+// 2. allow send coin
+// 3. allow send message without subscription. how?
+// 4. do not popup chat notification
+
 import 'helpers/constants.dart';
 import 'dart:async';
 import 'dart:io';
@@ -20,18 +26,15 @@ class ChatView extends StatefulWidget {
 class _ChatState extends State<ChatView> {
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
 
+  // bot injects some auto generated messages into stream
   ChatUser _bot = ChatUser(
     name: "Chat Bot",
     uid: "0123",
     avatar: "https://cdn1.iconfinder.com/data/icons/user-pictures/100/supportfemale-512.png",
   );
 
+  // the current user, loaded from local storage
   ChatUser _me; 
-  // = ChatUser(
-  //   name: "Fayeed",
-  //   uid: "123456789",
-  //   avatar: "https://www.wrappixel.com/ampleadmin/assets/images/users/4.jpg",
-  // );
 
   List<ChatMessage> messages = List<ChatMessage>();
   var m = List<ChatMessage>();
@@ -56,8 +59,6 @@ class _ChatState extends State<ChatView> {
       uid: currentuser["moneyButtonId"] );
     }
 
-    messages.add(new ChatMessage(text:"Welcome to Pub\$ub support channel.", 
-      user: this._me));
     //subscribe to group/support
     this._sub = Subscription.fromJSON(
       {
@@ -73,6 +74,8 @@ class _ChatState extends State<ChatView> {
     this._sub.pubsub = new PubSubConnection(this._sub);
     this._sub.enabled = true;
     await this._sub.subscribe();
+    onSend(new ChatMessage(text:"Welcome to Pub\$ub support channel.", 
+      user: this._me));
 
   }
 
@@ -100,17 +103,16 @@ class _ChatState extends State<ChatView> {
     var jmess = message.toJson();
     //publish on customer service topic
     this._sub.publish(jsonEncode(jmess));
+  }
 
-    // var documentReference = Firestore.instance
-    //     .collection('messages')
-    //     .document(DateTime.now().millisecondsSinceEpoch.toString());
-
-    // Firestore.instance.runTransaction((transaction) async {
-    //   await transaction.set(
-    //     documentReference,
-    //     message.toJson(),
-    //   );
-    // });
+  Widget waiting() {
+    return Center(
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(
+          Theme.of(context).primaryColor,
+        ),
+      ),
+    );
   }
 
   @override
@@ -126,161 +128,122 @@ class _ChatState extends State<ChatView> {
           if (snapshot.connectionState == ConnectionState.done) {
             return _chatStream();
           } else {
-            return new CircularProgressIndicator();
+            return waiting();
           }
         }
       )
     );
   }
 
-
 Widget _chatStream() {
   return
-      StreamBuilder(
-          stream: BitcoinOfThingsMux.stream,
-          //Firestore.instance.collection('messages').snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).primaryColor,
-                  ),
-                ),
-              );
-            } else {
-              print(snapshot);
-              final streammessage = snapshot.data;
-              ChatMessage message;
-              if (streammessage.object != null) {
-                try {
-                  message = ChatMessage.fromJson(streammessage.object);
-                }
-                catch (err) {
-                  message = new ChatMessage(text: streammessage.rawString, 
-                  user: _bot);
-                }
-              } else {
-                  message = new ChatMessage(text: streammessage.rawString, 
-                  user: _bot);
-              }
-              messages.add(message);
-              //todo snapshot, display messages
-              // List<DocumentSnapshot> items = snapshot.data.documents;
-              // var messages =
-              //     items.map((i) => ChatMessage.fromJson(i.data)).toList();
-              return DashChat(
-                key: _chatViewKey,
-                inverted: false,
-                onSend: onSend,
-                //todo fix user/other
-                user: _me,
-                inputDecoration:
-                    InputDecoration.collapsed(hintText: "Add message here..."),
-                dateFormat: DateFormat('yyyy-MMM-dd'),
-                timeFormat: DateFormat('HH:mm'),
-                messages: messages,
-                showUserAvatar: false,
-                showAvatarForEveryMessage: false,
-                scrollToBottom: false,
-                onPressAvatar: (ChatUser user) {
-                  print("OnPressAvatar: ${user.name}");
-                },
-                onLongPressAvatar: (ChatUser user) {
-                  print("OnLongPressAvatar: ${user.name}");
-                },
-                inputMaxLines: 5,
-                messageContainerPadding: EdgeInsets.only(left: 5.0, right: 5.0),
-                alwaysShowSend: true,
-                inputTextStyle: TextStyle(fontSize: 16.0),
-                inputContainerStyle: BoxDecoration(
-                  border: Border.all(width: 0.0),
-                  color: Colors.white,
-                ),
-                onQuickReply: (Reply reply) {
-                  setState(() {
-                    messages.add(ChatMessage(
-                        text: reply.value,
-                        createdAt: DateTime.now(),
-                        user: _me));
-
-                    messages = [...messages];
-                  });
-
-                  Timer(Duration(milliseconds: 300), () {
-                    _chatViewKey.currentState.scrollController
-                      ..animateTo(
-                        _chatViewKey.currentState.scrollController.position
-                            .maxScrollExtent,
-                        curve: Curves.easeOut,
-                        duration: const Duration(milliseconds: 300),
-                      );
-
-                    if (i == 0) {
-                      systemMessage();
-                      Timer(Duration(milliseconds: 600), () {
-                        systemMessage();
-                      });
-                    } else {
-                      systemMessage();
-                    }
-                  });
-                },
-                onLoadEarlier: () {
-                  print("loading...");
-                },
-                shouldShowLoadEarlier: false,
-                showTraillingBeforeSend: true,
-                trailing: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.photo),
-                    onPressed: () async {
-                      File result = await ImagePicker.pickImage(
-                        source: ImageSource.gallery,
-                        imageQuality: 80,
-                        maxHeight: 400,
-                        maxWidth: 400,
-                      );
-
-                      if (result != null) {
-                        //todo upload?
-                        // final StorageReference storageRef =
-                        //     FirebaseStorage.instance.ref().child("chat_images");
-
-                        // StorageUploadTask uploadTask = storageRef.putFile(
-                        //   result,
-                        //   StorageMetadata(
-                        //     contentType: 'image/jpg',
-                        //   ),
-                        // );
-                        // StorageTaskSnapshot download =
-                        //     await uploadTask.onComplete;
-
-                        // String url = await download.ref.getDownloadURL();
-                        String url = '';
-                        ChatMessage message =
-                            ChatMessage(text: "", user: _me, image: url);
-
-                        //todo doing a save?
-                        // var documentReference = Firestore.instance
-                        //     .collection('messages')
-                        //     .document(DateTime.now()
-                        //         .millisecondsSinceEpoch
-                        //         .toString());
-
-                        // Firestore.instance.runTransaction((transaction) async {
-                        //   await transaction.set(
-                        //     documentReference,
-                        //     message.toJson(),
-                        //   );
-                        // });
-                      }
-                    },
-                  )
-                ],
-              );
+    StreamBuilder(
+      stream: BitcoinOfThingsMux.stream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return waiting();
+        } else {
+          print(snapshot);
+          final streammessage = snapshot.data;
+          ChatMessage message;
+          if (streammessage.object != null) {
+            try {
+              message = ChatMessage.fromJson(streammessage.object);
             }
-          });
+            catch (err) {
+              message = new ChatMessage(text: streammessage.rawString, 
+              user: _bot);
+            }
+          } else {
+              message = new ChatMessage(text: streammessage.rawString, 
+              user: _bot);
+          }
+          messages.add(message);
+          // var messages =
+          //     items.map((i) => ChatMessage.fromJson(i.data)).toList();
+          return DashChat(
+            key: _chatViewKey,
+            inverted: false,
+            onSend: onSend,
+            user: _me,
+            inputDecoration:
+                InputDecoration.collapsed(hintText: "Add message here..."),
+            dateFormat: DateFormat('yyyy-MMM-dd'),
+            timeFormat: DateFormat('HH:mm'),
+            messages: messages,
+            showUserAvatar: false,
+            showAvatarForEveryMessage: false,
+            scrollToBottom: false,
+            onPressAvatar: (ChatUser user) {
+              // todo pop up menu
+              print("OnPressAvatar: ${user.name}");
+            },
+            onLongPressAvatar: (ChatUser user) {
+              print("OnLongPressAvatar: ${user.name}");
+            },
+            inputMaxLines: 5,
+            messageContainerPadding: EdgeInsets.only(left: 5.0, right: 5.0),
+            alwaysShowSend: true,
+            inputTextStyle: TextStyle(fontSize: 16.0),
+            inputContainerStyle: BoxDecoration(
+              border: Border.all(width: 0.0),
+              color: Colors.white,
+            ),
+            onQuickReply: (Reply reply) {
+              setState(() {
+                messages.add(ChatMessage(
+                  text: reply.value,
+                  createdAt: DateTime.now(),
+                  user: _me));
+
+                messages = [...messages];
+              });
+
+              Timer(Duration(milliseconds: 300), () {
+                _chatViewKey.currentState.scrollController
+                  ..animateTo(
+                    _chatViewKey.currentState.scrollController.position
+                        .maxScrollExtent,
+                    curve: Curves.easeOut,
+                    duration: const Duration(milliseconds: 300),
+                  );
+
+                if (i == 0) {
+                  systemMessage();
+                  Timer(Duration(milliseconds: 600), () {
+                    systemMessage();
+                  });
+                } else {
+                  systemMessage();
+                }
+              });
+            },
+            onLoadEarlier: () {
+              print("loading...");
+            },
+            shouldShowLoadEarlier: false,
+            showTraillingBeforeSend: true,
+            trailing: <Widget>[
+              IconButton(
+                icon: Icon(Icons.photo),
+                onPressed: () async {
+                  File result = await ImagePicker.pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 80,
+                    maxHeight: 400,
+                    maxWidth: 400,
+                  );
+                  if (result != null) {
+                    // when user selected an image... 
+                    ChatMessage image = new ChatMessage(text: null, user: _me, 
+                      image: await result.readAsString());
+                    onSend(image);                      
+                  }
+                },
+              )
+            ],
+          );
+        }
+      });
     }
-  
 }

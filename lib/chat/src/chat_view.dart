@@ -387,11 +387,11 @@ class DashChatState extends State<DashChat> {
         bottom: height + 12.0,
         right: 10.0,
         child: widget.scrollToBottomWidget != null
-            ? widget.scrollToBottomWidget()
-            : ScrollToBottom(
-                onScrollToBottomPress: widget.onScrollToBottomPress,
-                scrollController: scrollController,
-              ),
+          ? widget.scrollToBottomWidget()
+          : ScrollToBottom(
+              onScrollToBottomPress: widget.onScrollToBottomPress,
+              scrollController: scrollController,
+            ),
       ),
     );
   }
