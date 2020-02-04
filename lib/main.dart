@@ -29,8 +29,9 @@ class GlobalNotifier {
   static void wireUp () {
     GlobalNotifier.botMux = BitcoinOfThingsMux.stream.listen( (botmsg) {
       var notemsg = NotificationMessage(
-        'unknown topic', 
-        botmsg);
+        botmsg.streamName != null ? botmsg.streamName : "unknown topic", 
+        //TODO: decode, use .object
+        botmsg.rawString);
       // then just show a notification
       GlobalNotifier.notifications.show(notemsg);
     } );
@@ -81,9 +82,3 @@ void initLogger() {
       }
     });
   }
-
-// listens to bot messages and pipes them into 
-// notifications
-void wireupBotStreamsToNotifier() {
-  // when we get a bot message into our app
-}

@@ -1,4 +1,5 @@
 // to show list of publications user has created
+import 'helpers/constants.dart';
 import 'dart:async';
 import 'dart:io';
 import 'mqtt_stream.dart';
@@ -88,7 +89,7 @@ Future<Stream<Publication>> getpubs() async {
 
  final client = new http.Client();
 
-  var usercred = await LocalStorage.getJSON("usercred");
+  var usercred = await LocalStorage.getJSON(Constants.KEY_CRED);
   //print(usercred);
   var auth = jsonEncode({"p":usercred["username"], "u":usercred["pass"]});
   //print(auth);

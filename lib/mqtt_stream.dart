@@ -24,6 +24,7 @@
 // can interact with the data.
 //
 //
+import 'helpers/constants.dart' as PubSubConstants;
 import 'app_events.dart';
 import 'models/pubsub_base.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -32,6 +33,21 @@ import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'BitcoinOfThings_feed.dart';
 import 'components/localStorage.dart';
+
+// Represents a stream message receied from BOT Server
+class StreamMessage {
+  final String streamName;
+  final String rawString;
+  Map<String, dynamic> object;
+  StreamMessage(this.streamName, this.rawString) {
+    if (this.rawString != null && this.rawString.length > -1) {
+      try {
+        this.object = jsonDecode(this.rawString);
+      }
+      catch (err) {/* eat exception */}
+    }
+  }
+}
 
 class PubSubConnection {
   //sub will have connection information
@@ -157,7 +173,7 @@ class PubSubConnection {
       port = _pubsub.port;
       clientId = _pubsub.clientId;
       username = _pubsub.username;
-      var usercred = await LocalStorage.getJSON("usercred");
+      var usercred = await LocalStorage.getJSON(PubSubConstants.Constants.KEY_CRED);
       password = usercred["pass"];
     } else {
       Map connectJson = await _getBrokerAndKey();
@@ -236,13 +252,15 @@ class PubSubConnection {
     /// The client has a change notifier object(see the Observable class) 
     /// which we then listen to to get
     /// notifications of published updates to each subscribed topic.
+    /// This is where the mqtt message gets received
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload;
       final String pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
       /// The payload is a byte buffer, this will be specific to the topic
-      BitcoinOfThingsMux.add(pt);
+      StreamMessage sMess = StreamMessage(c[0].topic, pt);
+      BitcoinOfThingsMux.add(sMess);
       log.info(
           'Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       return pt;

@@ -58,6 +58,9 @@ Future<Stream<MarketPublication>> getMarket() async {
  final String url = 'https://api.bitcoinofthings.com/marketplace';
 
  final client = new http.Client();
+ //todo this can throw exeception
+ //Exception has occurred.
+ //ClientException (Write failed)
  final streamedRest = await client.send(
    http.Request('get', Uri.parse(url))
  );

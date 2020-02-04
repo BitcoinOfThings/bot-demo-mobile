@@ -18,7 +18,7 @@ class LocalStorage {
 
   static void putJSON (key, value) async {
       final storage = new FlutterSecureStorage();
-      await storage.write(key: "usercred", value: convert.jsonEncode(value));
+      await storage.write(key: key, value: convert.jsonEncode(value));
   }
 
 }

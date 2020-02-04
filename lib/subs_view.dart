@@ -1,4 +1,5 @@
 // show list of subs for user
+import 'helpers/constants.dart';
 import 'dart:async';
 import 'mqtt_stream.dart';
 import 'sub_view.dart';
@@ -130,8 +131,8 @@ class SubsState extends State<SubsView>
   Future<List<dynamic>> getsubs() async {
     //get subs from api
     var url = 'https://api.bitcoinofthings.com/getsubs';
-      var usercred = await LocalStorage.getJSON("usercred");
-      //print(usercred);
+      var usercred = await LocalStorage.getJSON(Constants.KEY_CRED);
+      print(usercred);
       var auth = convert.jsonEncode({"p":usercred["username"], "u":usercred["pass"]});
       //print(auth);
       var response = await http.post(

@@ -56,4 +56,9 @@ abstract class BasePubSub {
     }
   }
 
+  publish(String message) {
+      if (_pubsub != null) {
+        _pubsub.publish(topic, message);
+      }
+  }
 }
