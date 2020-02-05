@@ -174,7 +174,7 @@ class PubSubConnection {
       clientId = _pubsub.clientId;
       username = _pubsub.username;
       var usercred = await LocalStorage.getJSON(PubSubConstants.Constants.KEY_CRED);
-      password = usercred["pass"];
+      password = usercred == null ? '' : usercred["pass"] ?? '';
     } else {
       Map connectJson = await _getBrokerAndKey();
       server = connectJson['broker'];
@@ -217,7 +217,8 @@ class PubSubConnection {
       AppEvents.publish('Error $e');
       client.disconnect();
       client = null;
-      return client;
+      // return client;
+      rethrow;
     }
 
     if (client == null) {

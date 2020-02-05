@@ -32,6 +32,7 @@ class MarketState extends State<MarketView> {
 
   void listenForPubs() async {
     final Stream<MarketPublication> stream = await getMarket();
+    // can sometime get "stream has already been listened to"
     stream.listen((MarketPublication pub) =>
       setState(() =>  _pubs.add(pub))
     );

@@ -50,6 +50,7 @@ class _ChatState extends State<ChatView> {
     var currentuser = await LocalStorage.getJSON(Constants.KEY_USER);
 
     if (currentuser == null) {
+      // TODO: show dialog enter anon name
       this._me = new ChatUser(name: "unknown");
     } else {
     this._me = new ChatUser(
@@ -57,7 +58,8 @@ class _ChatState extends State<ChatView> {
       uid: currentuser["moneyButtonId"] );
     }
 
-    //subscribe to group/support
+    // call api to get sub, create sub if anon
+    // subscribe to group/support
     this._sub = Subscription.fromJSON(
       {
       'pub': {
@@ -72,9 +74,21 @@ class _ChatState extends State<ChatView> {
     this._sub.setSingleplexStream();
     this._sub.pubsub = new PubSubConnection(this._sub);
     this._sub.enabled = true;
-    await this._sub.subscribe();
-    var welcome = ChatMessage(text:"Welcome to Pub\$ub support chat. You may ask your support question here. Someone should be available shortly to answer.", 
-      user: this._bot);
+    var welcome;
+    try {
+      await this._sub.subscribe();
+      welcome = ChatMessage(
+        text:"Welcome to Pub\$ub support chat. You may ask your support question here. Someone should be available shortly to answer.", 
+        //image:'',
+        user: this._bot);
+    }
+    catch (ex) {
+      // ${ex.toString()}.
+      welcome = ChatMessage(
+        text:"There was an error. Chat is not available.", 
+        //image:'',
+        user: this._bot);
+    }
     _sub.stream.add(
       StreamMessage(
         _sub.topic,

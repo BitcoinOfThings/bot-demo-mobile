@@ -1,5 +1,6 @@
 // A sample page. Not used
 import 'dart:async';
+import 'chat_flow.dart';
 import 'helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
@@ -114,7 +115,9 @@ class HomeState extends State<HomePage> {
         new PubsViewBuilder(authController),
         // marketview does not need auth
         new MarketView(),
-        new ChatView()
+        new ChatWorkflow(
+            child: ChatView()
+        )
       ],
       );
   }

@@ -62,8 +62,9 @@ abstract class BasePubSub {
     this._stream = _streamController.stream;
   }
 
-  subscribe() async {
-      try {
+  Future subscribe() async {
+    var result;
+      // try {
       print('start/stop sub here ${this.enabled}');
       if (_pubsub != null) {
         if (!this.enabled) {
@@ -74,13 +75,14 @@ abstract class BasePubSub {
           }
         }
         if (this.enabled) {
-          await _pubsub.subscribe(this.topic);
+          result = await _pubsub.subscribe(this.topic);
         }
       }
-    }
-    catch (err) {
-      // todo show error
-    }
+    // }
+    // catch (err) {
+    //   // todo show error
+    // }
+    return result;
   }
 
   publish(String message) {
