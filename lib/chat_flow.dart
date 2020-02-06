@@ -25,8 +25,8 @@ class ChatWorkflow extends StatefulWidget {
 class _ChatWorkflowState extends State<ChatWorkflow> {
   DialogService _dialogService;
   TextEditingController _textFieldController = TextEditingController();
-  String _username;
-  String _password;
+  // flag to remember if user was already published
+  bool _waspublished = false;
 
   _ChatWorkflowState(this._dialogService);
 
@@ -36,21 +36,27 @@ class _ChatWorkflowState extends State<ChatWorkflow> {
   }
 
   Future<void> start() async {
-    if (this._username == null) {
-      // get currently logged in user
-      var usercred = await LocalStorage.getJSON(PubSubConstants.Constants.KEY_CRED);
-      var username = usercred == null ? '' : usercred["username"] ?? '';
-      _password = usercred == null ? '' : usercred["pass"] ?? '';
+    if (_waspublished) return;
+    // get currently logged in api user, if any
+    var usercred = await LocalStorage.getJSON(PubSubConstants.Constants.KEY_CRED);
+    var username = usercred == null ? '' : usercred["username"] ?? '';
+    var pass = usercred == null ? '' : usercred["pass"] ?? '';
 
-      if (username == null || username.length < 1) {
-        // prompt for name if needed
-        username = await promptUserName();
-        // todo store in LocalStorage
+    if (username == null || username.length < 1) {
+      //there is no api user
+      var chatuser = await LocalStorage.getJSON(PubSubConstants.Constants.KEY_CHATUSER);
+      if (chatuser != null) {
+        Bus.publish(PubSubConstants.Constants.KEY_CHATUSER, chatuser);
+        this.setState(() => this._waspublished = true);
       } else {
-        Bus.publish('chatuser', {"name":username, "pass": _password});
+        // there is no chat user saved locally
+        await promptUserName();
+        //user result will be null here! have to harvest in dialog.then
       }
-      // call api to get subscription
-      //return username;
+    } else {
+        Bus.publish(PubSubConstants.Constants.KEY_CHATUSER, 
+          {"name":username, "pass": pass});
+        this.setState(() => this._waspublished = true);
     }
   }
 
@@ -62,24 +68,18 @@ class _ChatWorkflowState extends State<ChatWorkflow> {
 
   @override
   build (context) {
-    // return FutureBuilder<void>(
-    //   future: start(),
-    //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.done) {
-    //       return widget.child;
-    //     } else {
-    //       return new CircularProgressIndicator();
-    //     }
-    //   }
-    // );
-
+    // this will run user login check in the background
+    // and possible prompt for user name
     WidgetsBinding.instance.addPostFrameCallback((_) 
       => _onAfterBuild(context));
+    // at the same time show empty chat in background
     return widget.child;
   }
 
   void _onAfterBuild(BuildContext context){
-    start();
+    if (_waspublished == false) {
+      start();
+    }
   }
 
   void _showDialog() {
@@ -89,9 +89,13 @@ class _ChatWorkflowState extends State<ChatWorkflow> {
           _buildDialog(),
     ).then ( (username) {
       // this returns the result of the dialog
-      this.setState(() {_username = username;});
+      //this.setState(() {_username = username;});
       // just raise event and let chat view handle it
-      Bus.publish('chatuser', {"name":username});
+      var chatuser = { "name": username };
+      LocalStorage.putJSON(PubSubConstants.Constants.KEY_CHATUSER,
+        chatuser);
+      Bus.publish(PubSubConstants.Constants.KEY_CHATUSER, chatuser);
+      this.setState(() => this._waspublished = true);
     });
   }
   

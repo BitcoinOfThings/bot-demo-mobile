@@ -1,12 +1,11 @@
 // Show chat
-// 1. fix scrolling, in general
-// 2. allow send coin
-// 3. allow send message without subscription. how?
+// 1. fix scrolling, top and bottom cut off couple dozen pixels
+// 2. fix display images
 // ============================
-//import 'package:upubsub_mobile/app_events.dart';
+
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-//import 'helpers/constants.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
@@ -17,6 +16,7 @@ import 'chat/dash_chat.dart';
 import 'package:upubsub_mobile/models/Subscription.dart';
 import 'main.dart';
 import 'mqtt_stream.dart';
+import 'helpers/constants.dart' as PubSubConstants;
 
 // display chat in a page
 class ChatView extends StatefulWidget {
@@ -58,13 +58,7 @@ class _ChatState extends State<ChatView> {
   void initState() {
     super.initState();
     Bus.subscribe((msg) {
-      //print(msg);
-      //set _me based on info passed
-      if (msg.topic == "chatuser") {
-        // this._me = new ChatUser(
-        //   name: currentuser["name"], 
-        //   uid: currentuser["moneyButtonId"] );
-        // }
+      if (msg.topic == PubSubConstants.Constants.KEY_CHATUSER) {
         this.setState(() => this._me = new ChatUser(
           name: msg.payload["name"],
           uid: msg?.payload["moneyButtonId"] == null
@@ -76,13 +70,19 @@ class _ChatState extends State<ChatView> {
           )
         );
       }
+      if (msg.topic == PubSubConstants.Constants.STREAM_ERROR) {
+        //todo how to know it was chat error
+        this.messages.add(ChatMessage(
+          text: msg?.payload["error"],
+          user: this._bot
+        ));
+      }
     });
   }
 
-  // todo, _me will come in when user specified
+  // _me will be populated when dialog closed
   Future<void> getUser() async {
     if (_me == null) return;
-    // call api to get sub, create sub if anon
     // subscribe to group/support
     this._sub = await _getSubscription(this._me);
     if (this._sub != null) {
@@ -205,8 +205,7 @@ class _ChatState extends State<ChatView> {
             showAvatarForEveryMessage: false,
             scrollToBottom: true,
             onPressAvatar: (ChatUser user) {
-              // todo pop up menu
-              print("OnPressAvatar: ${user.name}");
+                // pop action menu
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => 
@@ -270,7 +269,7 @@ class _ChatState extends State<ChatView> {
                   );
                   if (result != null) {
                     // when user selected an image... 
-                    var bytes = await result.readAsBytes();
+                    Uint8List bytes = await result.readAsBytes();
                     // set text as empty string, null produces exception
                     ChatMessage image = new ChatMessage(text: '', user: _me, 
                       image: base64Encode(bytes));

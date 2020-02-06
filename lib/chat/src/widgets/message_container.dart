@@ -51,11 +51,11 @@ class MessageContainer extends StatelessWidget {
     this.isUser,
   });
 
-// TODO: not quite working. not sure why chat doesnt
-// display images
-  String imageFromMessage(message) {
-    var img = UriData.fromString(message.image);
-    if (img.isBase64) return utf8.decode(base64.decode(message.image));
+  Uint8List imageFromMessage(message) {
+    bool is64 = isBase64(message.image);
+    if (is64) {
+      return base64Decode(message.image);
+    }
     return message.image;
   }
 
@@ -107,15 +107,14 @@ class MessageContainer extends StatelessWidget {
               if (messageImageBuilder != null)
                 messageImageBuilder(message.image)
               else
+                // Chat displays image bytes from
+                // message, image is not a url
                 Padding(
                   padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: FadeInImage.memoryNetwork(
+                  child: Image.memory(imageFromMessage(message),
                     height: MediaQuery.of(context).size.height * 0.3,
                     width: MediaQuery.of(context).size.width * 0.7,
                     fit: BoxFit.contain,
-                    placeholder: kTransparentImage,
-                    //todo: check if image is base64
-                    image: imageFromMessage(message),
                   ),
                 ),
             if (messageTimeBuilder != null)

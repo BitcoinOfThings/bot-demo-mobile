@@ -26,12 +26,12 @@
 //
 import 'helpers/constants.dart' as PubSubConstants;
 import 'app_events.dart';
+import 'main.dart';
 import 'models/pubsub_base.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-//import 'BitcoinOfThings_feed.dart';
 import 'components/localStorage.dart';
 
 // Represents a stream message receied from BOT Server
@@ -221,6 +221,10 @@ class PubSubConnection {
     } on Exception catch (e) {
       log.severe('EXCEPTION::client exception - $e');
       AppEvents.publish('Error $e');
+      Bus.publish(PubSubConstants.Constants.STREAM_ERROR,
+        {
+          "error":e
+        });
       client.disconnect();
       client = null;
       // return client;

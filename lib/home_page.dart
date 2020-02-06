@@ -44,6 +44,7 @@ class HomeState extends State<HomePage> {
   signOut() {
     print("SIGNING OUT!");
     LocalStorage.delete(Constants.KEY_CRED);
+    LocalStorage.delete(Constants.KEY_CHATUSER);
     GlobalNotifier.pause();
     _streamController.add(AuthenticationState.signedOut());
     Navigator.of(context).pushNamed('/');

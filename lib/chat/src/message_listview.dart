@@ -94,6 +94,35 @@ class _MessageListViewState extends State<MessageListView> {
     return true;
   }
 
+  whenMessageTapped(message) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => 
+                  _buildMessageDialog(message),
+              );
+  }
+  Widget _buildMessageDialog(ChatMessage message) {
+    return new AlertDialog(
+      title: Text(message.id),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('Something good coming...'),
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          textColor: Theme.of(context).primaryColor,
+          child: const Text('Close'),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     DateTime currentDate;
@@ -251,7 +280,10 @@ class _MessageListViewState extends State<MessageListView> {
                                               ));
                                     }
                                   },
-                                  child: widget.messageBuilder != null
+                                  child: InkWell(
+                                    onTap: () => whenMessageTapped(widget.messages[i]),
+                                    child: 
+                                  widget.messageBuilder != null
                                       ? widget
                                           .messageBuilder(widget.messages[i])
                                       : MessageContainer(
@@ -269,6 +301,7 @@ class _MessageListViewState extends State<MessageListView> {
                                               widget.messageContainerDecoration,
                                           parsePatterns: widget.parsePatterns,
                                         ),
+                                  ),
                                 ),
                                 if (widget.showuserAvatar)
                                   Padding(
