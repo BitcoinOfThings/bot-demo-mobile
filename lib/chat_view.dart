@@ -48,10 +48,17 @@ class _ChatState extends State<ChatView> {
   var i = 0;
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
     Bus.subscribe((msg) {
-      print(msg);
+      //print(msg);
       //set _me based on info passed
       if (msg.topic == "chatuser") {
         // this._me = new ChatUser(
@@ -78,28 +85,29 @@ class _ChatState extends State<ChatView> {
     // call api to get sub, create sub if anon
     // subscribe to group/support
     this._sub = await _getSubscription(this._me);
-    this._sub.setSingleplexStream();
-    this._sub.pubsub = new PubSubConnection(this._sub);
-    this._sub.enabled = true;
-    var welcome;
-    try {
-      await this._sub.subscribe();
-      welcome = ChatMessage(
-        text:"Hello ${this._me.name}! Welcome to Pub\$ub support chat. Ask your support question here and someone should be available shortly to answer.", 
-        user: this._bot);
+    if (this._sub != null) {
+      this._sub.setSingleplexStream();
+      this._sub.pubsub = new PubSubConnection(this._sub);
+      this._sub.enabled = true;
+      var welcome;
+      try {
+        await this._sub.subscribe();
+        welcome = ChatMessage(
+          text:"Hello ${this._me.name}! Welcome to Pub\$ub support chat. Ask your support question here and someone should be available shortly to answer.", 
+          user: this._bot);
+      }
+      catch (ex) {
+        // ${ex.toString()}.
+        welcome = ChatMessage(
+          text:"Hello ${this._me.name}! ${ex.toString()}. There was an error. Chat is not available. Contact support at http://upubsub.com", 
+          user: this._bot);
+      }
+      _sub.stream.add(
+        StreamMessage(
+          _sub.topic,
+          jsonEncode(welcome.toJson())
+      ));
     }
-    catch (ex) {
-      // ${ex.toString()}.
-      welcome = ChatMessage(
-        text:"Hello ${this._me.name}! ${ex.toString()}. There was an error. Chat is not available. Contact support at http://upubsub.com", 
-        user: this._bot);
-    }
-    _sub.stream.add(
-      StreamMessage(
-        _sub.topic,
-        jsonEncode(welcome.toJson())
-    ));
-
   }
 
   void systemMessage() {
@@ -283,7 +291,7 @@ class _ChatState extends State<ChatView> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Send Bitcoin...'),
+          Text('Something good coming...'),
         ],
       ),
       actions: <Widget>[

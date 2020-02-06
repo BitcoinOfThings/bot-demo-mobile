@@ -91,7 +91,7 @@ class _ChatWorkflowState extends State<ChatWorkflow> {
       // this returns the result of the dialog
       this.setState(() {_username = username;});
       // just raise event and let chat view handle it
-      Bus.publish('chatuser', {"name":username, "pass": "pubsub"});
+      Bus.publish('chatuser', {"name":username});
     });
   }
   

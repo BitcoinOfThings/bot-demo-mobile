@@ -174,7 +174,9 @@ class PubSubConnection {
       clientId = _pubsub.clientId;
       username = _pubsub.username;
       var usercred = await LocalStorage.getJSON(PubSubConstants.Constants.KEY_CRED);
-      password = usercred == null ? '' : usercred["pass"] ?? '';
+      password = usercred == null ? null : usercred["pass"] ?? '';
+      //todo security review
+      password = password ?? 'pubsub';
     } else {
       Map connectJson = await _getBrokerAndKey();
       server = connectJson['broker'];

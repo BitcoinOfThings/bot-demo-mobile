@@ -46,6 +46,7 @@ class HomeState extends State<HomePage> {
     LocalStorage.delete(Constants.KEY_CRED);
     GlobalNotifier.pause();
     _streamController.add(AuthenticationState.signedOut());
+    Navigator.of(context).pushNamed('/');
   }
 
   @override
