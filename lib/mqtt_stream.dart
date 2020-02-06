@@ -183,6 +183,10 @@ class PubSubConnection {
       password = connectJson['key'];
     }
 
+    if (password.isEmpty) {
+      throw new Exception("Password cannot be empty");
+    }
+
     log.info('in _login....broker  : $server');
     log.info('in _login....clientId: $clientId');
     log.info('in _login....username: $username');

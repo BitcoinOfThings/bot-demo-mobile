@@ -39,7 +39,10 @@ class MarketState extends State<MarketView> {
   }
   @override
   Widget build(BuildContext context) => 
-  ListView.builder(
+  _pubs.isEmpty 
+  ? FlatButton(child:Text('No Items.'), 
+    onPressed: listenForPubs)
+  : ListView.builder(
       itemCount: _pubs.length,
       itemBuilder: (context, index) {
         var pub = _pubs[index];

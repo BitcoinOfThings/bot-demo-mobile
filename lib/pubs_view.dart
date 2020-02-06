@@ -76,13 +76,15 @@ class PubsState extends State<PubsView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return ListView.builder(
+    return _pubs.isEmpty 
+      ? Center(child: Text('No Items found'))
+      : ListView.builder(
         itemCount: _pubs.length,
         itemBuilder: (context, index) => 
           PublicationTile(_pubs[index]),
-    );
+      );
+    }
   }
-}
 
 Future<Stream<Publication>> getpubs() async {
  final String url = 'https://api.bitcoinofthings.com/getpubs';

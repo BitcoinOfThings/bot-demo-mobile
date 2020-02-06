@@ -1,6 +1,6 @@
 part of dash_chat;
 
-/// ChatUser used to show distinguish between different people
+/// ChatUser used to distinguish between different people
 /// in a chat conversation or a chat group
 class ChatUser {
   /// Unique id of the user if no unique is provided a [UUID v4]
@@ -9,6 +9,8 @@ class ChatUser {
 
   /// An [optional] parameter to set the user name.
   String name;
+  // used to authenticate to api
+  String password;
 
   /// An [optional] parameter to set the user avatar.
   String avatar;
@@ -25,6 +27,7 @@ class ChatUser {
     this.avatar,
     this.containerColor,
     this.color,
+    this.password
   }) {
     this.uid = uid != null ? uid : Uuid().v4().toString();
   }

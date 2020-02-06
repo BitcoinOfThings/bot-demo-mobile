@@ -3,7 +3,10 @@
 // 2. allow send coin
 // 3. allow send message without subscription. how?
 // ============================
-import 'helpers/constants.dart';
+//import 'package:upubsub_mobile/app_events.dart';
+
+import 'package:http/http.dart' as http;
+//import 'helpers/constants.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
@@ -12,7 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'chat/dash_chat.dart';
 import 'package:upubsub_mobile/models/Subscription.dart';
-import 'components/localStorage.dart';
+import 'main.dart';
 import 'mqtt_stream.dart';
 
 // display chat in a page
@@ -28,7 +31,10 @@ class _ChatState extends State<ChatView> {
   ChatUser _bot = ChatUser(
     name: "Chat Bot",
     uid: "0123",
-    avatar: "https://cdn1.iconfinder.com/data/icons/user-pictures/100/supportfemale-512.png",
+    avatar: 
+    "https://amphenol-antennas.com/wp-content/uploads/2017/05/Customer-Support-Icon-300x300.jpg"
+    //"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTiTK6pMtIb5hAtMBd93Fr_XIbYmzvl9n-4h6tq0HooGqvQjWST"
+    //"https://cdn1.iconfinder.com/data/icons/user-pictures/100/supportfemale-512.png",
   );
 
   // the current user, loaded from local storage
@@ -44,33 +50,34 @@ class _ChatState extends State<ChatView> {
   @override
   void initState() {
     super.initState();
+    Bus.subscribe((msg) {
+      print(msg);
+      //set _me based on info passed
+      if (msg.topic == "chatuser") {
+        // this._me = new ChatUser(
+        //   name: currentuser["name"], 
+        //   uid: currentuser["moneyButtonId"] );
+        // }
+        this.setState(() => this._me = new ChatUser(
+          name: msg.payload["name"],
+          uid: msg?.payload["moneyButtonId"] == null
+            ? '' : msg?.payload["moneyButtonId"],
+          avatar: msg?.payload["avatar"] == null
+            ? '' : msg?.payload["avatar"],
+          password: msg?.payload["pass"] == null
+            ? '' : msg?.payload["pass"]
+          )
+        );
+      }
+    });
   }
 
+  // todo, _me will come in when user specified
   Future<void> getUser() async {
-    var currentuser = await LocalStorage.getJSON(Constants.KEY_USER);
-
-    if (currentuser == null) {
-      // TODO: show dialog enter anon name
-      this._me = new ChatUser(name: "unknown");
-    } else {
-    this._me = new ChatUser(
-      name: currentuser["name"], 
-      uid: currentuser["moneyButtonId"] );
-    }
-
+    if (_me == null) return;
     // call api to get sub, create sub if anon
     // subscribe to group/support
-    this._sub = Subscription.fromJSON(
-      {
-      'pub': {
-        'id': "5e37502b1c4a1f4103af6305", 
-        'name': "PubSub Customer Support", 
-        'topic': "group/support" }, 
-        'username': "5e1b8dd805a33f28cbdfdad1", 
-        'clientId': "5e3750cd1c4a1f4103af6306", 
-        'status': "active", 'expires': "2020-03-02T22:44:25.625Z"
-        }
-      );
+    this._sub = await _getSubscription(this._me);
     this._sub.setSingleplexStream();
     this._sub.pubsub = new PubSubConnection(this._sub);
     this._sub.enabled = true;
@@ -78,15 +85,13 @@ class _ChatState extends State<ChatView> {
     try {
       await this._sub.subscribe();
       welcome = ChatMessage(
-        text:"Welcome to Pub\$ub support chat. You may ask your support question here. Someone should be available shortly to answer.", 
-        //image:'',
+        text:"Hello ${this._me.name}! Welcome to Pub\$ub support chat. Ask your support question here and someone should be available shortly to answer.", 
         user: this._bot);
     }
     catch (ex) {
       // ${ex.toString()}.
       welcome = ChatMessage(
-        text:"There was an error. Chat is not available.", 
-        //image:'',
+        text:"Hello ${this._me.name}! ${ex.toString()}. There was an error. Chat is not available. Contact support at http://upubsub.com", 
         user: this._bot);
     }
     _sub.stream.add(
@@ -135,14 +140,9 @@ class _ChatState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    // Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Pub\$ub Support Chat"),
-      // ),
-      // body: 
-      Container(
-//        child: Expanded(
+    return this._me == null 
+    ? waiting()
+    : Container(
           child:
           FutureBuilder<void>(
         future: getUser(),
@@ -154,11 +154,10 @@ class _ChatState extends State<ChatView> {
           }
         }
       )
-//      )
     );
   }
 
-Widget _chatStream() {
+  Widget _chatStream() {
   return
     StreamBuilder(
       stream: _sub.stream,
@@ -275,7 +274,7 @@ Widget _chatStream() {
           );
         }
       });
-    }
+  }
 
   Widget _buildAvatarDialog(ChatUser user) {
     return new AlertDialog(
@@ -298,4 +297,44 @@ Widget _chatStream() {
       ],
     );
   }
+
+  Future<Subscription> _getSubscription(ChatUser user) async {
+
+    // auth is either user/pwd from localstorage
+    // or chatuser.username
+    var auth = {"p":user.name, "u": user.password};
+
+    var response = await http.post(
+        "https://api.bitcoinofthings.com/getchat",
+        body: jsonEncode(auth),
+        headers: {HttpHeaders.contentTypeHeader: "application/json"},
+        );
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        var data = jsonResponse;
+        if (data != null ) {
+          var sub = Subscription.fromJSON(data);
+          return sub;
+        } else {
+          print('Not Authorized!');
+        }
+      } else {
+        print('Request failed with status: ${response.statusCode}.');
+      }
+    return null;
+
+    // return Subscription.fromJSON(
+    //   {
+    //   'pub': {
+    //     'id': "5e37502b1c4a1f4103af6305", 
+    //     'name': "PubSub Customer Support", 
+    //     'topic': "group/support" }, 
+    //     'username': "5e1b8dd805a33f28cbdfdad1", 
+    //     'clientId': "5e3750cd1c4a1f4103af6306", 
+    //     'status': "active", 'expires': "2020-03-02T22:44:25.625Z"
+    //     }
+    //   );
+  }
+
+
 }

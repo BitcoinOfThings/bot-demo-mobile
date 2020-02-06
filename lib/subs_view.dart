@@ -90,8 +90,10 @@ class SubsState extends State<SubsView>
     return 
     Column(
     children: [Expanded(
-      child:
-      ListView.builder(
+      child: 
+        _subs.isEmpty 
+        ? Center(child: Text('No Items found'))
+        : ListView.builder(
       itemCount: _subs.length,
       itemBuilder: (context, index) => 
         SubscriptionTile(_subs[index]),
