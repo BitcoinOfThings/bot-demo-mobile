@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'app_events.dart';
-import 'signin_page.dart';
+// import 'signin_page.dart';
 import 'auth/auth_state.dart';
 
-class HomeViewBuilder extends StatelessWidget {
+class AppLogViewBuilder extends StatelessWidget {
 
   final StreamController<AuthenticationState> _streamController;
-  const HomeViewBuilder(this._streamController);
+  const AppLogViewBuilder(this._streamController);
 
   Widget buildUi(BuildContext context, AuthenticationState s) {
-    if (s.authenticated) {
-      return HomeView();
-    } else {
-      return SignInPage(_streamController);
-    }
+    // if (s.authenticated) {
+      return AppLogView();
+    // } else {
+    //   return SignInPage(_streamController);
+    // }
   }
 
   @override
@@ -30,8 +30,9 @@ class HomeViewBuilder extends StatelessWidget {
   }
 }
 
-// home view will show login or notifications
-class HomeView extends StatelessWidget {
+// applog will show log of application events
+// could be a dashboard?
+class AppLogView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {

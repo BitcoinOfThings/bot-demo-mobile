@@ -1,4 +1,5 @@
 // to show list of publications user has created
+import 'helpers/constants.dart';
 import 'dart:async';
 import 'dart:io';
 import 'mqtt_stream.dart';
@@ -75,20 +76,22 @@ class PubsState extends State<PubsView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return ListView.builder(
+    return _pubs.isEmpty 
+      ? Center(child: Text('No Items found'))
+      : ListView.builder(
         itemCount: _pubs.length,
         itemBuilder: (context, index) => 
           PublicationTile(_pubs[index]),
-    );
+      );
+    }
   }
-}
 
 Future<Stream<Publication>> getpubs() async {
  final String url = 'https://api.bitcoinofthings.com/getpubs';
 
  final client = new http.Client();
 
-  var usercred = await LocalStorage.getJSON("usercred");
+  var usercred = await LocalStorage.getJSON(Constants.KEY_CRED);
   //print(usercred);
   var auth = jsonEncode({"p":usercred["username"], "u":usercred["pass"]});
   //print(auth);

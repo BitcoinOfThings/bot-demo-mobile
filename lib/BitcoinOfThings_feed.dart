@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:upubsub_mobile/mqtt_stream.dart';
 
 /*
 * Currently, there will be one stream for all
@@ -18,13 +19,13 @@ class BitcoinOfThingsMux {
   //
   // A Stream controller alerts the stream when new data is available.
   // The controller should be private.
-  static StreamController<String> _feedController = 
+  static StreamController<StreamMessage> _feedController = 
     BehaviorSubject();
 
   // Expose the stream so a StreamBuilder can use it.
   // Issue with default stream, fixed with rxdart.
   // "Bad State: Stream has already been listened to"
-  static BehaviorSubject<String> get stream => 
+  static BehaviorSubject<StreamMessage> get stream => 
     _feedController.stream;
 
   static void close() {
@@ -36,14 +37,14 @@ class BitcoinOfThingsMux {
   // this method called from PubSubConnection
   // IOW, all BOT streams are multiplexed
   // into this one stream. That may change.
-  static void add(String value) {
+  static void add(StreamMessage streamMessage) {
     Logger log = Logger('BitcoinOfThings_feed.dart');
     try {
-      _feedController.add(value);
-      log.info('---> added value to the Stream... the value is: $value');
+      _feedController.add(streamMessage);
+      log.info('---> added value to the Stream... the value is: ${streamMessage.rawString}');
     } catch (e) {
       log.severe(
-        '$value was published to the feed.  Error adding to the Stream: $e');
+        '${streamMessage.rawString} was published to the feed.  Error adding to the Stream: $e');
     }
   }
 }

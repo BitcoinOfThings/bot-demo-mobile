@@ -1,0 +1,146 @@
+part of dash_chat;
+
+/// MessageContainer is just a wrapper around [Text], [Image]
+/// component to present the message
+class MessageContainer extends StatelessWidget {
+  /// Message Object that will be rendered
+  /// Takes a [ChatMessage] object
+  final ChatMessage message;
+
+  /// [DateFormat] object to render the date in desired
+  /// format, if no format is provided it use
+  /// the default `HH:mm:ss`
+  final DateFormat timeFormat;
+
+  /// [messageTextBuilder] function takes a function with this
+  /// structure [Widget Function(String)] to render the text inside
+  /// the container.
+  final Widget Function(String) messageTextBuilder;
+
+  /// [messageImageBuilder] function takes a function with this
+  /// structure [Widget Function(String)] to render the image inside
+  /// the container.
+  final Widget Function(String) messageImageBuilder;
+
+  /// [messageTimeBuilder] function takes a function with this
+  /// structure [Widget Function(String)] to render the time text inside
+  /// the container.
+  final Widget Function(String) messageTimeBuilder;
+
+  /// Provides a custom style to the message container
+  /// takes [BoxDecoration]
+  final BoxDecoration messageContainerDecoration;
+
+  /// Used to parse text to make it linkified text uses
+  /// [flutter_parsed_text](https://pub.dev/packages/flutter_parsed_text)
+  /// takes a list of [MatchText] in order to parse Email, phone, links
+  /// and can also add custom pattersn using regex
+  final List<MatchText> parsePatterns;
+
+  /// A flag which is used for assiging styles
+  final bool isUser;
+
+  const MessageContainer({
+    @required this.message,
+    @required this.timeFormat,
+    this.messageImageBuilder,
+    this.messageTextBuilder,
+    this.messageTimeBuilder,
+    this.messageContainerDecoration,
+    this.parsePatterns = const <MatchText>[],
+    this.isUser,
+  });
+
+  Uint8List imageFromMessage(message) {
+    bool is64 = isBase64(message.image);
+    if (is64) {
+      return base64Decode(message.image);
+    }
+    return message.image;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        // have to adjust this width is changing avatar
+        maxWidth: MediaQuery.of(context).size.width * 0.75,
+      ),
+      child: Container(
+        decoration: messageContainerDecoration != null
+            ? messageContainerDecoration.copyWith(
+                color: message.user.containerColor != null
+                    ? message.user.containerColor
+                    : messageContainerDecoration.color,
+              )
+            : BoxDecoration(
+                color: message.user.containerColor != null
+                    ? message.user.containerColor
+                    : isUser
+                        ? Theme.of(context).accentColor
+                        : Color.fromRGBO(225, 225, 225, 1),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+        margin: EdgeInsets.only(
+          bottom: 5.0,
+        ),
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            if (messageTextBuilder != null)
+              messageTextBuilder(message.text)
+            else
+              //This is the default render for messages
+              ParsedText(
+                parse: parsePatterns,
+                text: message.text,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: message.user.color != null
+                      ? message.user.color
+                      : isUser ? Colors.white70 : Colors.black87,
+                ),
+              ),
+            if (message.image != null)
+              if (messageImageBuilder != null)
+                messageImageBuilder(message.image)
+              else
+                // Chat displays image bytes from
+                // message, image is not a url
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: Image.memory(imageFromMessage(message),
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+            if (messageTimeBuilder != null)
+              messageTimeBuilder(
+                timeFormat != null
+                    ? timeFormat.format(message.createdAt)
+                    : DateFormat('HH:mm:ss').format(message.createdAt),
+              )
+            else
+              Padding(
+                padding: EdgeInsets.only(top: 5.0),
+                child: Text(
+                  timeFormat != null
+                      ? timeFormat.format(message.createdAt)
+                      : DateFormat('HH:mm:ss').format(message.createdAt),
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: message.user.color != null
+                        ? message.user.color
+                        : isUser ? Colors.white70 : Colors.black87,
+                  ),
+                ),
+              )
+          ],
+        ),
+      ),
+    );
+  }
+}

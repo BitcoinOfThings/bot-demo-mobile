@@ -6,6 +6,8 @@ import 'components/notifications.dart';
 import 'home_page.dart';
 import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
+import 'package:event_bus/event_bus.dart';
+
 
 //
 // added to route the logging info - the file and where in the file
@@ -16,6 +18,28 @@ void main() {
   initLogger();
   GlobalNotifier.wireUp();
   runApp(BOTApp());
+}
+
+class AppMessage {
+  final String topic;
+  final Map<String, dynamic> payload;
+  AppMessage(this.topic, this.payload);
+}
+
+typedef void WhenSomethingFunc(AppMessage event);
+
+// Application Event bus
+class Bus {
+  static final EventBus _bus = EventBus();
+  // publish an event
+  static void publishMessage(AppMessage event) => _bus.fire(event);
+  static void publish(String topic, Map<String, dynamic> payload) => _bus.fire(
+    AppMessage(topic, payload));
+
+  // subscribe to events
+  static void subscribe(WhenSomethingFunc func) =>
+  _bus.on<AppMessage>().listen((event) => func(event));
+
 }
 
 // one notifier for all sub streams (for now)
@@ -29,8 +53,9 @@ class GlobalNotifier {
   static void wireUp () {
     GlobalNotifier.botMux = BitcoinOfThingsMux.stream.listen( (botmsg) {
       var notemsg = NotificationMessage(
-        'unknown topic', 
-        botmsg);
+        botmsg.streamName != null ? botmsg.streamName : "unknown topic", 
+        //TODO: decode, use .object
+        botmsg.rawString);
       // then just show a notification
       GlobalNotifier.notifications.show(notemsg);
     } );
@@ -81,9 +106,3 @@ void initLogger() {
       }
     });
   }
-
-// listens to bot messages and pipes them into 
-// notifications
-void wireupBotStreamsToNotifier() {
-  // when we get a bot message into our app
-}

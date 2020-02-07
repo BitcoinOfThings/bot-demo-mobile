@@ -10,7 +10,7 @@ description: Mobile client to test uPub$ub and BOT Service.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0-dev.5.0 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -29,6 +29,12 @@ dependencies:
   flutter_local_notifications: ^1.1.3
   url_launcher: ^5.4.1
   event_bus: ^1.1.1
+  image_picker: ^0.6.3+1
+  intl: ^0.16.1
+  uuid: ^2.0.4
+  flutter_parsed_text: ^1.2.3
+  transparent_image: ^1.0.0
+  string_validator: ^0.1.3
 
 dev_dependencies:
   flutter_launcher_icons: ^0.7.4

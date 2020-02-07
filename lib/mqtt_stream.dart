@@ -24,20 +24,36 @@
 // can interact with the data.
 //
 //
+import 'helpers/constants.dart' as PubSubConstants;
 import 'app_events.dart';
+import 'main.dart';
 import 'models/pubsub_base.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-import 'BitcoinOfThings_feed.dart';
 import 'components/localStorage.dart';
 
+// Represents a stream message receied from BOT Server
+class StreamMessage {
+  final String streamName;
+  final String rawString;
+  Map<String, dynamic> object;
+  StreamMessage(this.streamName, this.rawString) {
+    if (this.rawString != null && this.rawString.length > -1) {
+      try {
+        this.object = jsonDecode(this.rawString);
+      }
+      catch (err) {/* eat exception */}
+    }
+  }
+}
+
 class PubSubConnection {
-  //sub will have connection information
-  //for now, support subs. later need pub conx too
+  //pubsub object will have connection information
   BasePubSub _pubsub;
   Logger log;
+
   PubSubConnection(this._pubsub) {
     // Start logger.  MAKE SURE STRING IS NAME OF DART FILE WHERE
     // CODE IS (in this case the filename is mqtt_stream.dart)
@@ -157,14 +173,20 @@ class PubSubConnection {
       port = _pubsub.port;
       clientId = _pubsub.clientId;
       username = _pubsub.username;
-      var usercred = await LocalStorage.getJSON("usercred");
-      password = usercred["pass"];
+      var usercred = await LocalStorage.getJSON(PubSubConstants.Constants.KEY_CRED);
+      password = usercred == null ? null : usercred["pass"] ?? '';
+      //todo security review
+      password = password ?? 'pubsub';
     } else {
       Map connectJson = await _getBrokerAndKey();
       server = connectJson['broker'];
       clientId = connectJson['key'];
       username = connectJson['username'];
       password = connectJson['key'];
+    }
+
+    if (password.isEmpty) {
+      throw new Exception("Password cannot be empty");
     }
 
     log.info('in _login....broker  : $server');
@@ -199,9 +221,14 @@ class PubSubConnection {
     } on Exception catch (e) {
       log.severe('EXCEPTION::client exception - $e');
       AppEvents.publish('Error $e');
+      Bus.publish(PubSubConstants.Constants.STREAM_ERROR,
+        {
+          "error":e
+        });
       client.disconnect();
       client = null;
-      return client;
+      // return client;
+      rethrow;
     }
 
     if (client == null) {
@@ -236,13 +263,17 @@ class PubSubConnection {
     /// The client has a change notifier object(see the Observable class) 
     /// which we then listen to to get
     /// notifications of published updates to each subscribed topic.
+    /// This is where the mqtt message gets received
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload;
       final String pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
       /// The payload is a byte buffer, this will be specific to the topic
-      BitcoinOfThingsMux.add(pt);
+      StreamMessage sMess = StreamMessage(c[0].topic, pt);
+      // TODO: do all bot messages come through here?
+      // might need to compare topics
+      _pubsub.stream.add(sMess);
       log.info(
           'Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
       return pt;

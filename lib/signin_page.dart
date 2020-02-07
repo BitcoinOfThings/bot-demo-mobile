@@ -1,3 +1,4 @@
+import 'helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:upubsub_mobile/app_events.dart';
@@ -33,32 +34,43 @@ class SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
-    LocalStorage.getJSON("usercred").then((usercred) {
-      var defaultuser = usercred == null ? '' : usercred["username"] ?? '';
-      var defaultpass = usercred == null ? '' : usercred["pass"] ?? '';
-      emailController = new TextEditingController(text: defaultuser);
-      passwordController = new TextEditingController(text: defaultpass);
-    });
+  }
+
+  Future<void> getLocalUser() async {
+    final usercred = await LocalStorage.getJSON(Constants.KEY_CRED);
+    var defaultuser = usercred == null ? '' : usercred["username"] ?? '';
+    var defaultpass = usercred == null ? '' : usercred["pass"] ?? '';
+    emailController = new TextEditingController(text: defaultuser);
+    passwordController = new TextEditingController(text: defaultpass);
   }
 
   signIn() async {
     //validate email and password
     var username = emailController.text;
     var pass = passwordController.text;
+    if (username.length == 0 || pass.length == 0) {
+      print("NO TEXT TO VALIDATE");
+      return false;
+    }
     var authcheck = await valauth(username,pass);
-    if (authcheck) {
-      LocalStorage.putJSON("usercred", {"username":username,"pass":pass});
+    // auth:,user:
+    if (authcheck["auth"] == true) {
+      LocalStorage.putJSON(Constants.KEY_CRED, {"username":username,"pass":pass});
+      LocalStorage.putJSON(Constants.KEY_USER, authcheck["user"]);
       _streamController.add(AuthenticationState.authenticated());
       AppEvents.publish('User logged in');
       GlobalNotifier.resume();
     } else {
+      LocalStorage.putJSON(Constants.KEY_CRED, {});
+      LocalStorage.putJSON(Constants.KEY_USER, {});
       _streamController.add(AuthenticationState.failed());
       AppEvents.publish('Login failed');
     }
   }
 
-    Future<bool> valauth(mbid, password) async {
-    //get subs from api
+    // returns auth:bool, user: userinfo
+    Future<dynamic> valauth(mbid, password) async {
+    //get auth from api
     var url = 'https://api.bitcoinofthings.com/valauth';
       var response = await http.post(
         url,
@@ -67,11 +79,11 @@ class SignInPageState extends State<SignInPage> {
         );
       if (response.statusCode == 200) {
         var jsonResponse = convert.jsonDecode(response.body);
-        var data = jsonResponse["auth"];
-        if (data != null ) {
-          return data;
-        } 
-        return false;
+        // var success = jsonResponse["auth"];
+        // if (success != null ) {
+        //   return jsonResponse;
+        // } 
+        return jsonResponse;
       } else {
         print('Request failed with status: ${response.statusCode}.');
       }
@@ -81,6 +93,28 @@ class SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
 
+    return Scaffold(
+      body: SingleChildScrollView(
+      child: Center(
+        child: Container(
+          color: Colors.white,
+          child: FutureBuilder<void>(
+            future: getLocalUser(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return _loginForm();
+              } else {
+                return new CircularProgressIndicator();
+              }
+            }
+          ),
+        ),
+      )
+    )
+ );
+}
+
+Widget _loginForm() {
     final emailField = TextField(
       controller: emailController,
       obscureText: true,
@@ -118,13 +152,7 @@ class SignInPageState extends State<SignInPage> {
       ),
     );
 
-
-    return Scaffold(
-      body: SingleChildScrollView(
-      child: Center(
-        child: Container(
-          color: Colors.white,
-          child: Padding(
+  return Padding(
             padding: const EdgeInsets.all(36.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -147,12 +175,8 @@ class SignInPageState extends State<SignInPage> {
                 pubsubLogo(),
               ],
             ),
-          ),
-        ),
-      ),
-        )
-    );
-  }
+          );
+}
 
 Widget pubsubLogo () => 
   SizedBox(

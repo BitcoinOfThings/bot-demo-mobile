@@ -1,10 +1,13 @@
 // A sample page. Not used
 import 'dart:async';
+import 'chat_flow.dart';
+import 'helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:upubsub_mobile/app_events.dart';
 import 'package:upubsub_mobile/helpers/urllauncher.dart';
 import 'auth/auth_state.dart';
+import 'chat_view.dart';
 import 'components/localStorage.dart';
 import 'components/notifications.dart';
 import 'home_view.dart';
@@ -40,15 +43,17 @@ class HomeState extends State<HomePage> {
   //signout/logout from app
   signOut() {
     print("SIGNING OUT!");
-    LocalStorage.delete("usercred");
+    LocalStorage.delete(Constants.KEY_CRED);
+    LocalStorage.delete(Constants.KEY_CHATUSER);
     GlobalNotifier.pause();
     _streamController.add(AuthenticationState.signedOut());
+    Navigator.of(context).pushNamed('/');
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length:4,
+      length: 4,
       child: Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -56,10 +61,11 @@ class HomeState extends State<HomePage> {
         bottom: TabBar(
           indicatorColor: Colors.amber,
           tabs: <Widget>[
-            Tab(text:'Home', icon: Icon(Icons.home)),
+            //Tab(text:'Home', icon: Icon(Icons.home)),
             Tab(text:'Subs', icon: Icon(Icons.subscriptions)),
             Tab(text:'Pubs', icon: Icon(Icons.publish)),
-            Tab(text:'Market', icon: Icon(Icons.view_list))
+            Tab(text:'Market', icon: Icon(Icons.view_list)),
+            Tab(text:'Chat', icon: Icon(Icons.chat))
           ],
         ),
       ),
@@ -82,7 +88,7 @@ class HomeState extends State<HomePage> {
         icon: const Icon(
           Icons.notifications),
           iconSize: 30,
-          tooltip: 'settings',
+          tooltip: 'notification test',
           onPressed: () {
             GlobalNotifier.notifications.show(NotificationMessage('Pub\$Sub sent you a message','Your message could go here'));
             AppEvents.publish('User tested notifications');
@@ -92,6 +98,7 @@ class HomeState extends State<HomePage> {
           Icons.settings),
           iconSize: 30,
           tooltip: 'settings',
+          // route to /applog
           onPressed: () {}),
       IconButton(
         icon: const Icon(
@@ -105,12 +112,14 @@ class HomeState extends State<HomePage> {
   Widget _body(context, authController) {
     return TabBarView(
       children: <Widget>[
-        // home page might not need auth either?
-        new HomeViewBuilder(authController),
+        //new AppLogViewBuilder(authController),
         new SubsViewBuilder(authController),
         new PubsViewBuilder(authController),
         // marketview does not need auth
-        new MarketView()
+        new MarketView(),
+        new ChatWorkflow(
+            child: ChatView()
+        )
       ],
       );
   }

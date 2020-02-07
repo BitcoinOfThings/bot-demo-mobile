@@ -1,10 +1,30 @@
 // base class for pubsub
+import 'dart:async';
+
+import 'package:rxdart/subjects.dart';
+import 'package:upubsub_mobile/BitcoinOfThings_feed.dart';
+
 import '../mqtt_stream.dart';
 
 // both sub and pub can open connection to server
 // publication can be subscribed to by the pub owner
 // as a general policy of the platform
 abstract class BasePubSub {
+
+  StreamController<StreamMessage> _streamController;
+  // this is the stream to pipe messages into
+  // if null then default to BOT Mux
+  // if specified then stream is only for one topic
+  BehaviorSubject<StreamMessage> _stream;
+
+  set stream (s) { _stream = s; }
+
+  BehaviorSubject<StreamMessage> get stream {
+    if (_stream == null) {
+      return BitcoinOfThingsMux.stream;
+    }
+    return _stream;
+  }
 
   final String id;
   final String username;
@@ -35,8 +55,16 @@ abstract class BasePubSub {
 
   BasePubSub(this.id, this.username, this.topic);
 
-  subscribe() async {
-      try {
+  // makes this into a single topic stream
+  // listen to .stream for messages on one topic
+  setSingleplexStream() {
+    this._streamController = new BehaviorSubject();
+    this._stream = _streamController.stream;
+  }
+
+  Future subscribe() async {
+    var result;
+      // try {
       print('start/stop sub here ${this.enabled}');
       if (_pubsub != null) {
         if (!this.enabled) {
@@ -47,13 +75,19 @@ abstract class BasePubSub {
           }
         }
         if (this.enabled) {
-          await _pubsub.subscribe(this.topic);
+          result = await _pubsub.subscribe(this.topic);
         }
       }
-    }
-    catch (err) {
-      // todo show error
-    }
+    // }
+    // catch (err) {
+    //   // todo show error
+    // }
+    return result;
   }
 
+  publish(String message) {
+      if (_pubsub != null) {
+        _pubsub.publish(topic, message);
+      }
+  }
 }
