@@ -95,11 +95,11 @@ class _MessageListViewState extends State<MessageListView> {
   }
 
   whenMessageTapped(message) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => 
-                  _buildMessageDialog(message),
-              );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => 
+        _buildMessageDialog(message),
+    );
   }
   Widget _buildMessageDialog(ChatMessage message) {
     return new AlertDialog(

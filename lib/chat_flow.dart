@@ -88,6 +88,7 @@ class _ChatWorkflowState extends State<ChatWorkflow> {
         builder: (BuildContext context) => 
           _buildDialog(),
     ).then ( (username) {
+      if (username == null) return;
       // this returns the result of the dialog
       //this.setState(() {_username = username;});
       // just raise event and let chat view handle it
@@ -129,6 +130,7 @@ class _ChatWorkflowState extends State<ChatWorkflow> {
           new FlatButton(
             onPressed: () {
               _dialogService.dialogComplete();
+              Navigator.of(context).pop();
               Navigator.of(context).pushNamed('/');
             },
             textColor: Theme.of(context).primaryColor,

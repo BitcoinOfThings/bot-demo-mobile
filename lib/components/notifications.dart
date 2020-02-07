@@ -67,18 +67,69 @@ final BehaviorSubject<String> selectNotificationSubject =
 
 }
 
+  Future<void> show(msg) async => await showOneLine(msg);
+
 // show a NotificationMessage
-  Future<void> show(msg) async {
+  Future<void> showOneLine(msg) async {
     if (msg == null) return;
     //TODO: what is this channel stuff?
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    var androidPlatformChannelSpecifics = 
+      AndroidNotificationDetails(
         'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+        importance: Importance.Max, 
+        priority: Priority.High, 
+        ticker: 'ticker',
+        style: AndroidNotificationStyle.BigText,
+        playSound: false, //TODO: make configurable
+        );
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
+    var platformChannelSpecifics =  NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
         0, msg.title, msg.body, platformChannelSpecifics,
-        payload: 'item x');
+        payload: 'data back to app');
+  }
+
+  Future<void> showBig(msg) async {
+    var bigTextStyleInformation = 
+        BigTextStyleInformation(
+          msg.body,
+        htmlFormatBigText: true,
+        //contentTitle: 'overridden <b>big</b> content title',
+        htmlFormatContentTitle: true,
+        summaryText: 'summary <i>text</i>',
+        htmlFormatSummaryText: true);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'big text channel id',
+        'big text channel name',
+        'big text channel description',
+        playSound: true, //TODO: make configurable
+        style: AndroidNotificationStyle.BigText,
+        styleInformation: bigTextStyleInformation);
+    var platformChannelSpecifics =
+        NotificationDetails(androidPlatformChannelSpecifics, null);
+    await flutterLocalNotificationsPlugin.show(
+        0, msg.title, msg.body, platformChannelSpecifics);
+  }
+
+  Future<void> _showInboxNotification() async {
+    var lines = List<String>();
+    lines.add('line <b>1</b>');
+    lines.add('line <i>2</i>');
+    var inboxStyleInformation = InboxStyleInformation(lines,
+        htmlFormatLines: true,
+        contentTitle: 'overridden <b>inbox</b> context title',
+        htmlFormatContentTitle: true,
+        summaryText: 'summary <i>text</i>',
+        htmlFormatSummaryText: true);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'inbox channel id', 'inboxchannel name', 'inbox channel description',
+        playSound: false, //TODO: make configurable
+        style: AndroidNotificationStyle.Inbox,
+        styleInformation: inboxStyleInformation);
+    var platformChannelSpecifics =
+        NotificationDetails(androidPlatformChannelSpecifics, null);
+    await flutterLocalNotificationsPlugin.show(
+        0, 'inbox title', 'inbox body', platformChannelSpecifics);
   }
 }
