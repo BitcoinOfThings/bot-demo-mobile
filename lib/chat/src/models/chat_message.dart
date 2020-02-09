@@ -52,8 +52,9 @@ class ChatMessage {
   }
 
   ChatMessage.fromJson(Map<dynamic, dynamic> json) {
+    var emojiParser = EmojiParser();
     id = json['id'];
-    text = json['text'];
+    text = emojiParser.emojify(json['text']);
     image = json['image'];
     vedio = json['vedio'];
     createdAt = DateTime.fromMillisecondsSinceEpoch(json['createdAt']);
@@ -67,15 +68,18 @@ class ChatMessage {
     final Map<String, dynamic> data = Map<String, dynamic>();
 
     try {
+      var emojiParser = EmojiParser();
       data['id'] = this.id;
-      data['text'] = this.text;
+      //should call characters to get unicode
+      //representation of emojis
+      data['text'] = emojiParser.unemojify(this.text);
       data['image'] = this.image;
       data['vedio'] = this.vedio;
       data['createdAt'] = this.createdAt?.millisecondsSinceEpoch;
       data['user'] = user?.toJson();
       data['quickReplies'] = quickReplies?.toJson();
-    } catch (e) {
-      print(e);
+    } catch (e, stackTrace) {
+      ExceptionReporter.reportException(e, stackTrace);
     }
     return data;
   }

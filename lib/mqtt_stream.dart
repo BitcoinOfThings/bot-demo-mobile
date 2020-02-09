@@ -24,6 +24,7 @@
 // can interact with the data.
 //
 //
+import 'components/exception_reporter.dart';
 import 'helpers/constants.dart' as PubSubConstants;
 import 'app_events.dart';
 import 'main.dart';
@@ -44,7 +45,9 @@ class StreamMessage {
       try {
         this.object = jsonDecode(this.rawString);
       }
-      catch (err) {/* eat exception */}
+      catch (err, stackTrace) {
+        ExceptionReporter.reportException(err, stackTrace);
+      }
     }
   }
 }

@@ -131,6 +131,8 @@ class _ChatState extends State<ChatView> {
 
   // send a chat message == publish
   void onSend(ChatMessage message) {
+    // message could have control chars if
+    // user typed in emoji
     var jmess = message.toJson();
     //publish on customer service topic
     this._sub.publish(jsonEncode(jmess));
@@ -330,17 +332,6 @@ class _ChatState extends State<ChatView> {
       }
     return null;
 
-    // return Subscription.fromJSON(
-    //   {
-    //   'pub': {
-    //     'id': "5e37502b1c4a1f4103af6305", 
-    //     'name': "PubSub Customer Support", 
-    //     'topic': "group/support" }, 
-    //     'username': "5e1b8dd805a33f28cbdfdad1", 
-    //     'clientId': "5e3750cd1c4a1f4103af6306", 
-    //     'status': "active", 'expires': "2020-03-02T22:44:25.625Z"
-    //     }
-    //   );
   }
 
 

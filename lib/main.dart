@@ -2,22 +2,52 @@
 import 'dart:async';
 import 'package:upubsub_mobile/BitcoinOfThings_feed.dart';
 import 'package:flutter/material.dart';
+import 'components/exception_reporter.dart';
 import 'components/notifications.dart';
 import 'home_page.dart';
 import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:event_bus/event_bus.dart';
 
-
 //
 // added to route the logging info - the file and where in the file
 // the message came from.
 //
 
-void main() {
+/// Reports [error] along with its [stackTrace] to Sentry.io.
+Future<Null> _reportError(dynamic error, dynamic stackTrace) async {
+  print('Caught error: $error');
+
+  // Errors thrown in development mode are unlikely to be interesting. You can
+  // check if you are running in dev mode using an assertion and omit sending
+  // the report.
+
+  ExceptionReporter.reportException(error, stackTrace);
+
+}
+
+Future<Null> main() async {
+  // This captures errors reported by the Flutter framework.
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    if (ExceptionReporter.isInDebugMode) {
+      // In development mode simply print to console.
+      FlutterError.dumpErrorToConsole(details);
+    } else {
+      // In production mode report to the application zone to report to
+      // Sentry.
+      Zone.current.handleUncaughtError(details.exception, details.stack);
+    }
+  };
+
   initLogger();
   GlobalNotifier.wireUp();
-  runApp(BOTApp());
+
+  runZoned<Future<Null>>(() async {
+    runApp(BOTApp());
+  }, onError: (error, stackTrace) async {
+    await _reportError(error, stackTrace);
+  });
+
 }
 
 class AppMessage {
@@ -106,3 +136,4 @@ void initLogger() {
       }
     });
   }
+

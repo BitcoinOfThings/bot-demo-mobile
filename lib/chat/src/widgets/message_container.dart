@@ -92,17 +92,8 @@ class MessageContainer extends StatelessWidget {
             if (messageTextBuilder != null)
               messageTextBuilder(message.text)
             else
-              //This is the default render for messages
-              ParsedText(
-                parse: parsePatterns,
-                text: message.text,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: message.user.color != null
-                      ? message.user.color
-                      : isUser ? Colors.white70 : Colors.black87,
-                ),
-              ),
+              _defaultMessageTextBuilder(message)
+            ,
             if (message.image != null)
               if (messageImageBuilder != null)
                 messageImageBuilder(message.image)
@@ -140,6 +131,20 @@ class MessageContainer extends StatelessWidget {
               )
           ],
         ),
+      ),
+    );
+  }
+
+  //This is the default render for messages
+  _defaultMessageTextBuilder(message) {
+    return ParsedText(
+      parse: parsePatterns,
+      text: message.text,
+      style: TextStyle(
+        fontSize: 20,
+        color: message.user.color != null
+          ? message.user.color
+          : isUser ? Colors.white70 : Colors.black87,
       ),
     );
   }
