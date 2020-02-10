@@ -24,6 +24,7 @@
 // can interact with the data.
 //
 //
+import 'components/bus.dart';
 import 'components/exception_reporter.dart';
 import 'helpers/constants.dart' as PubSubConstants;
 import 'app_events.dart';
@@ -267,6 +268,8 @@ class PubSubConnection {
     /// which we then listen to to get
     /// notifications of published updates to each subscribed topic.
     /// This is where the mqtt message gets received
+    //TODO: StreamSubscription should be returned to client
+    // because client needs to manage subscription
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload;
       final String pt =

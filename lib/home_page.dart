@@ -43,11 +43,13 @@ class HomeState extends State<HomePage> {
   //signout/logout from app
   signOut() {
     print("SIGNING OUT!");
-    LocalStorage.delete(Constants.KEY_CRED);
+    LocalStorage.delete(Constants.KEY_USER);
     LocalStorage.delete(Constants.KEY_CHATUSER);
     GlobalNotifier.pause();
     _streamController.add(AuthenticationState.signedOut());
-    Navigator.of(context).pushNamed('/');
+    //clears all routes and directs to sign in screen
+    Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+
   }
 
   @override

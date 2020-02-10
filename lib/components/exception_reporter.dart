@@ -9,8 +9,8 @@ class ExceptionReporter {
   return inDebugMode;
 }
 
-static reportException(error, stackTrace) async {
-  if (isInDebugMode) {
+static reportException(error, [stackTrace]) async {
+  if (false /*isInDebugMode*/) {
     print(stackTrace);
     print('In dev mode. Not sending report to Sentry.io.');
     return;

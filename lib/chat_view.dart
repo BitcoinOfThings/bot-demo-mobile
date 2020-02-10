@@ -1,6 +1,6 @@
 // Show chat
 // 1. fix scrolling, top and bottom cut off couple dozen pixels
-// 2. fix display images
+// 2. fix display images on ios
 // ============================
 
 import 'dart:typed_data';
@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'chat/dash_chat.dart';
 import 'package:upubsub_mobile/models/Subscription.dart';
+import 'components/bus.dart';
 import 'main.dart';
 import 'mqtt_stream.dart';
 import 'helpers/constants.dart' as PubSubConstants;
@@ -26,6 +27,7 @@ class ChatView extends StatefulWidget {
 
 class _ChatState extends State<ChatView> {
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
+  StreamSubscription _chatSubscription;
 
   // bot injects some auto generated messages into stream
   ChatUser _bot = ChatUser(
@@ -57,7 +59,7 @@ class _ChatState extends State<ChatView> {
   @override
   void initState() {
     super.initState();
-    Bus.subscribe((msg) {
+    _chatSubscription = Bus.subscribe((msg) {
       if (msg.topic == PubSubConstants.Constants.KEY_CHATUSER) {
         this.setState(() => this._me = new ChatUser(
           name: msg.payload["name"],
@@ -78,6 +80,12 @@ class _ChatState extends State<ChatView> {
         ));
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _chatSubscription?.cancel();
+    super.dispose();
   }
 
   // _me will be populated when dialog closed

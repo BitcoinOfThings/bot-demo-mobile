@@ -5,6 +5,7 @@
 // 4. pass subscription to chat
 
 import 'package:flutter/material.dart';
+import 'components/bus.dart';
 import 'components/localStorage.dart';
 import 'components/serviceDialog.dart';
 import 'helpers/constants.dart' as PubSubConstants;
@@ -64,6 +65,12 @@ class _ChatWorkflowState extends State<ChatWorkflow> {
   void initState() {
     super.initState();
     _dialogService.registerDialogListener(_showDialog);
+  }
+
+  @override
+  void dispose() {
+    _dialogService.deregisterDialogListener();
+    super.dispose();
   }
 
   @override
@@ -130,8 +137,11 @@ class _ChatWorkflowState extends State<ChatWorkflow> {
           new FlatButton(
             onPressed: () {
               _dialogService.dialogComplete();
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed('/');
+              //Navigator.of(context, rootNavigator: true).pop();
+              //Navigator.of(context, rootNavigator: true).popUntil(ModalRoute.withName('/'));
+              //Navigator.of(context).pushNamed('/');
+              //this does a full purge of route history
+              Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
             },
             textColor: Theme.of(context).primaryColor,
             child: const Text('Cancel'),

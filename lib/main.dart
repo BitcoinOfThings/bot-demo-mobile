@@ -7,7 +7,6 @@ import 'components/notifications.dart';
 import 'home_page.dart';
 import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
-import 'package:event_bus/event_bus.dart';
 
 //
 // added to route the logging info - the file and where in the file
@@ -47,28 +46,6 @@ Future<Null> main() async {
   }, onError: (error, stackTrace) async {
     await _reportError(error, stackTrace);
   });
-
-}
-
-class AppMessage {
-  final String topic;
-  final Map<String, dynamic> payload;
-  AppMessage(this.topic, this.payload);
-}
-
-typedef void WhenSomethingFunc(AppMessage event);
-
-// Application Event bus
-class Bus {
-  static final EventBus _bus = EventBus();
-  // publish an event
-  static void publishMessage(AppMessage event) => _bus.fire(event);
-  static void publish(String topic, Map<String, dynamic> payload) => _bus.fire(
-    AppMessage(topic, payload));
-
-  // subscribe to events
-  static void subscribe(WhenSomethingFunc func) =>
-  _bus.on<AppMessage>().listen((event) => func(event));
 
 }
 
