@@ -3,6 +3,9 @@
 # [uPub$ub](https://upubsub.com) mobile starter app
   This is a starter mobile application written in Flutter that connects your phone to the [uPub$ub Service](https://upubsub.com).
 
+The app is live on Google Play for Andriod.  
+Get it on [Google Play](https://play.google.com/store/apps/details?id=com.upubsub)
+
 
 ## Use the starter app - then make your own app
 

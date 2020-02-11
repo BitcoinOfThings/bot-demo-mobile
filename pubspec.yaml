@@ -7,7 +7,8 @@ description: Mobile client to test uPub$ub and BOT Service.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 0.1.1+1
+# Codemagic Use --build-name=0.1.0 --build-number=$BUILD_NUMBER
+version: 0.1.0+1
 
 environment:
   sdk: ">=2.6.0 <3.0.0"
