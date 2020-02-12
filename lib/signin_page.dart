@@ -28,9 +28,16 @@ class SignInPageState extends State<SignInPage> {
 
   SignInPageState(this._streamController);
 
-  TextEditingController emailController;
-  TextEditingController passwordController;
-  
+  //TextEditingController emailController = TextEditingController();
+  //TextEditingController passwordController = TextEditingController();
+  // emailController = new TextEditingController(text: defaultuser);
+  // passwordController = new TextEditingController(text: defaultpass);
+  String _defaultUser;
+  String _defaultPass;
+  String _submittedUser;
+  String _submittedPass;
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -38,17 +45,15 @@ class SignInPageState extends State<SignInPage> {
 
   Future<void> getLocalUser() async {
     final usercred = await LocalStorage.getJSON(Constants.KEY_CRED);
-    var defaultuser = usercred == null ? '' : usercred["username"] ?? '';
-    var defaultpass = usercred == null ? '' : usercred["pass"] ?? '';
-    emailController = new TextEditingController(text: defaultuser);
-    passwordController = new TextEditingController(text: defaultpass);
+    _defaultUser = usercred == null ? '' : usercred["username"] ?? '';
+    _defaultPass = usercred == null ? '' : usercred["pass"] ?? '';
   }
 
   signIn() async {
     //validate email and password
-    var username = emailController.text;
-    var pass = passwordController.text;
-    if (username.length == 0 || pass.length == 0) {
+    var username =  _submittedUser;
+    var pass = _submittedPass;
+    if (username?.length == 0 || pass?.length == 0) {
       print("NO TEXT TO VALIDATE");
       return false;
     }
@@ -115,8 +120,14 @@ class SignInPageState extends State<SignInPage> {
 }
 
 Widget _loginForm() {
-    final emailField = TextField(
-      controller: emailController,
+    final emailField = TextFormField(
+      initialValue: _defaultUser,
+      //controller: emailController,
+      validator: validateUser,
+      keyboardType: TextInputType.number,
+      onSaved: (value) {
+        setState(() => _submittedUser = value );
+      },
       obscureText: true,
       style: style,
       decoration: InputDecoration(
@@ -126,8 +137,14 @@ Widget _loginForm() {
               OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
 
-    final passwordField = TextField(
-      controller: passwordController,
+    final passwordField = TextFormField(
+      initialValue: _defaultPass,
+      //controller: passwordController,
+      validator: validatePassword,
+      keyboardType: TextInputType.text,
+      onSaved: (value) {
+        setState(() => _submittedPass = value );
+      },
       obscureText: true,
       style: style,
       decoration: InputDecoration(
@@ -144,7 +161,12 @@ Widget _loginForm() {
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        onPressed: () {signIn();},
+        onPressed: () {
+          if (_formKey.currentState.validate()) {
+            _formKey.currentState.save();
+            signIn();
+          }
+        },
         child: Text("Login",
             textAlign: TextAlign.center,
             style: style.copyWith(
@@ -152,7 +174,9 @@ Widget _loginForm() {
       ),
     );
 
-  return Padding(
+  return Form(
+    key: _formKey,
+    child: Padding(
             padding: const EdgeInsets.all(36.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -175,8 +199,37 @@ Widget _loginForm() {
                 pubsubLogo(),
               ],
             ),
-          );
+          )
+  );
 }
+
+  String validateUser(String value) {
+      if (value.isEmpty) {
+        return 'Please enter MoneybuttonId';
+      }
+      return null;
+      // Pattern pattern =
+      //     r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+      // RegExp regex = new RegExp(pattern);
+      // if (!regex.hasMatch(value))
+      //   return 'Enter Valid MoneybuttonId';
+      // else
+      //   return null;
+  }
+
+  String validatePassword(String value) {
+      if (value.isEmpty) {
+        return 'Please enter Password';
+      }
+      return null;
+      // Pattern pattern =
+      //     r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+      // RegExp regex = new RegExp(pattern);
+      // if (!regex.hasMatch(value))
+      //   return 'Enter Valid MoneybuttonId';
+      // else
+      //   return null;
+  }
 
 Widget pubsubLogo () => 
   SizedBox(

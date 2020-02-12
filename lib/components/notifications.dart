@@ -80,7 +80,7 @@ final BehaviorSubject<String> selectNotificationSubject =
         priority: Priority.High, 
         ticker: 'ticker',
         style: AndroidNotificationStyle.BigText,
-        playSound: false, //TODO: make configurable
+        playSound: false, 
         );
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
     var platformChannelSpecifics =  NotificationDetails(
@@ -112,24 +112,24 @@ final BehaviorSubject<String> selectNotificationSubject =
         0, msg.title, msg.body, platformChannelSpecifics);
   }
 
-  Future<void> _showInboxNotification() async {
-    var lines = List<String>();
-    lines.add('line <b>1</b>');
-    lines.add('line <i>2</i>');
-    var inboxStyleInformation = InboxStyleInformation(lines,
-        htmlFormatLines: true,
-        contentTitle: 'overridden <b>inbox</b> context title',
-        htmlFormatContentTitle: true,
-        summaryText: 'summary <i>text</i>',
-        htmlFormatSummaryText: true);
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'inbox channel id', 'inboxchannel name', 'inbox channel description',
-        playSound: false, //TODO: make configurable
-        style: AndroidNotificationStyle.Inbox,
-        styleInformation: inboxStyleInformation);
-    var platformChannelSpecifics =
-        NotificationDetails(androidPlatformChannelSpecifics, null);
-    await flutterLocalNotificationsPlugin.show(
-        0, 'inbox title', 'inbox body', platformChannelSpecifics);
-  }
+  // Future<void> _showInboxNotification() async {
+  //   var lines = List<String>();
+  //   lines.add('line <b>1</b>');
+  //   lines.add('line <i>2</i>');
+  //   var inboxStyleInformation = InboxStyleInformation(lines,
+  //       htmlFormatLines: true,
+  //       contentTitle: 'overridden <b>inbox</b> context title',
+  //       htmlFormatContentTitle: true,
+  //       summaryText: 'summary <i>text</i>',
+  //       htmlFormatSummaryText: true);
+  //   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  //       'inbox channel id', 'inboxchannel name', 'inbox channel description',
+  //       playSound: false, 
+  //       style: AndroidNotificationStyle.Inbox,
+  //       styleInformation: inboxStyleInformation);
+  //   var platformChannelSpecifics =
+  //       NotificationDetails(androidPlatformChannelSpecifics, null);
+  //   await flutterLocalNotificationsPlugin.show(
+  //       0, 'inbox title', 'inbox body', platformChannelSpecifics);
+  // }
 }

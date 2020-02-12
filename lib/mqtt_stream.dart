@@ -28,7 +28,6 @@ import 'components/bus.dart';
 import 'components/exception_reporter.dart';
 import 'helpers/constants.dart' as PubSubConstants;
 import 'app_events.dart';
-import 'main.dart';
 import 'models/pubsub_base.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'dart:convert';
@@ -180,7 +179,9 @@ class PubSubConnection {
       var usercred = await LocalStorage.getJSON(PubSubConstants.Constants.KEY_CRED);
       password = usercred == null ? null : usercred["pass"] ?? '';
       //todo security review
-      password = password ?? 'pubsub';
+      if (password == null || password.length == 0) {
+        password = 'pubsub';
+      }
     } else {
       Map connectJson = await _getBrokerAndKey();
       server = connectJson['broker'];

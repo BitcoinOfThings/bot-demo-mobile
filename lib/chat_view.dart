@@ -15,7 +15,6 @@ import 'package:intl/intl.dart';
 import 'chat/dash_chat.dart';
 import 'package:upubsub_mobile/models/Subscription.dart';
 import 'components/bus.dart';
-import 'main.dart';
 import 'mqtt_stream.dart';
 import 'helpers/constants.dart' as PubSubConstants;
 

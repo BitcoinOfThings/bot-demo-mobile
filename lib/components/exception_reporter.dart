@@ -17,16 +17,20 @@ static reportException(error, [stackTrace]) async {
   }
 
   print('Reporting to Sentry.io...');
+  try {
+    final SentryResponse response = await _sentry.captureException(
+      exception: error,
+      stackTrace: stackTrace,
+    );
 
-  final SentryResponse response = await _sentry.captureException(
-    exception: error,
-    stackTrace: stackTrace,
-  );
-
-  if (response.isSuccessful) {
-    print('Success! Event ID: ${response.eventId}');
-  } else {
-    print('Failed to report to Sentry.io: ${response.error}');
+    if (response.isSuccessful) {
+      print('Success! Event ID: ${response.eventId}');
+    } else {
+      print('Failed to report to Sentry.io: ${response.error}');
+    }
+  }
+  catch (err) {
+    print('Unable to report error: ${err.toString()}');
   }
 }
 

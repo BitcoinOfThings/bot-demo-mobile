@@ -9,7 +9,6 @@ import 'components/bus.dart';
 import 'components/localStorage.dart';
 import 'components/serviceDialog.dart';
 import 'helpers/constants.dart' as PubSubConstants;
-import 'main.dart';
 
 class ChatWorkflow extends StatefulWidget {
   final DialogService _dialogService = new DialogService();

@@ -10,7 +10,7 @@ import 'auth/auth_state.dart';
 import 'chat_view.dart';
 import 'components/localStorage.dart';
 import 'components/notifications.dart';
-import 'home_view.dart';
+//import 'home_view.dart';
 import 'main.dart';
 import 'subs_view.dart';
 import 'pubs_view.dart';
