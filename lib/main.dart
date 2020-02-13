@@ -8,6 +8,8 @@ import 'home_page.dart';
 import 'package:logging/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
 
+import 'home_view.dart';
+
 //
 // added to route the logging info - the file and where in the file
 // the message came from.
@@ -93,7 +95,11 @@ class BOTApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      // home is automatically assigned route '/'
       home: HomePage(title: 'uPub\$ub'),
+      routes: {
+        '/applog': (context) => AppLogView()
+      }
     );
   }
 }

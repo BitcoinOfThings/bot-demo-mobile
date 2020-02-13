@@ -5,7 +5,6 @@ import 'components/app_version.dart';
 import 'helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:upubsub_mobile/app_events.dart';
 import 'package:upubsub_mobile/helpers/urllauncher.dart';
 import 'auth/auth_state.dart';
 import 'chat_view.dart';
@@ -64,7 +63,6 @@ class HomeState extends State<HomePage> {
         bottom: TabBar(
           indicatorColor: Colors.amber,
           tabs: <Widget>[
-            //Tab(text:'Home', icon: Icon(Icons.home)),
             Tab(text:'Subs', icon: Icon(Icons.subscriptions)),
             Tab(text:'Pubs', icon: Icon(Icons.publish)),
             Tab(text:'Market', icon: Icon(Icons.view_list)),
@@ -93,15 +91,15 @@ class HomeState extends State<HomePage> {
           iconSize: 30,
           tooltip: 'notification test',
           onPressed: () {
-            GlobalNotifier.notifications.show(NotificationMessage('Pub\$Sub sent you a message','Your message could go here'));
-            AppEvents.publish('User tested notifications');
+            Navigator.pushNamed(context, '/applog');
+            // GlobalNotifier.notifications.show(NotificationMessage('Pub\$Sub sent you a message','Your message could go here'));
+            // AppEvents.publish('User tested notifications');
           }),
       IconButton(
         icon: const Icon(
           Icons.settings),
           iconSize: 30,
           tooltip: 'settings',
-          // route to /applog
           onPressed: () async {
             GlobalNotifier.notifications.show(NotificationMessage('App says...', await getAppVersion()));
           }),

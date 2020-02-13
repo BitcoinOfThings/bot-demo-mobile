@@ -396,9 +396,11 @@ class DashChatState extends State<DashChat> {
     );
   }
 
-  void _onAfterBuild(BuildContext context){
+  void _onAfterBuild(BuildContext context) {
+    if (scrollController != null) {
       double initPos = widget.inverted ? 0.0 : scrollController.position.maxScrollExtent;
       scrollController.jumpTo(initPos);
+    }
   }
 
   @override
