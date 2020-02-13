@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'app_events.dart';
+import 'components/exception_reporter.dart';
 import 'helpers/urllauncher.dart';
 import 'models/MarketPublication.dart';
 import 'components/market_pub.dart';
@@ -31,11 +33,17 @@ class MarketState extends State<MarketView> {
   }
 
   void listenForPubs() async {
-    final Stream<MarketPublication> stream = await getMarket();
-    // can sometime get "stream has already been listened to"
-    stream.listen((MarketPublication pub) =>
-      setState(() => _pubs.add(pub))
-    );
+    try {
+      final Stream<MarketPublication> stream = await getMarket();
+      // can sometime get "stream has already been listened to"
+      stream.listen((MarketPublication pub) =>
+        setState(() => _pubs.add(pub))
+      );
+    }
+    catch (ex, st) {
+      ExceptionReporter.reportException(ex, st);
+      AppEvents.publish(ex.toString());
+    }
   }
   @override
   Widget build(BuildContext context) => 

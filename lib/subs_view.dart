@@ -2,7 +2,7 @@
 import 'helpers/constants.dart';
 import 'dart:async';
 import 'mqtt_stream.dart';
-import 'sub_view.dart';
+//import 'sub_view.dart';
 import 'package:flutter/material.dart';
 import 'auth/auth_state.dart';
 import 'components/localStorage.dart';
@@ -99,16 +99,16 @@ class SubsState extends State<SubsView>
         SubscriptionTile(_subs[index]),
       ),
       ),
-        RaisedButton(
-        child: const Text("Demo Sub"),
-        splashColor: Colors.blue,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) 
-            => SubPage(title: "BOT Demo Sub")));
-        }
-      ),
+      //   RaisedButton(
+      //   child: const Text("Demo Sub"),
+      //   splashColor: Colors.blue,
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) 
+      //       => SubPage(title: "BOT Demo Sub")));
+      //   }
+      // ),
     ]
     );
   }

@@ -1,6 +1,7 @@
 // A sample page. Not used
 import 'dart:async';
 import 'chat_flow.dart';
+import 'components/app_version.dart';
 import 'helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
@@ -101,7 +102,9 @@ class HomeState extends State<HomePage> {
           iconSize: 30,
           tooltip: 'settings',
           // route to /applog
-          onPressed: () {}),
+          onPressed: () async {
+            GlobalNotifier.notifications.show(NotificationMessage('App says...', await getAppVersion()));
+          }),
       IconButton(
         icon: const Icon(
           Icons.exit_to_app),

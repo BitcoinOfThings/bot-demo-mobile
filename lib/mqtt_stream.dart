@@ -38,12 +38,19 @@ import 'components/localStorage.dart';
 // Represents a stream message receied from BOT Server
 class StreamMessage {
   final String streamName;
-  final String rawString;
+  String rawString;
   Map<String, dynamic> object;
   StreamMessage(this.streamName, this.rawString) {
     if (this.rawString != null && this.rawString.length > -1) {
       try {
-        this.object = jsonDecode(this.rawString);
+        var sth = jsonDecode(this.rawString);
+        if (sth is String) {
+          // we were given string, not json
+          this.rawString = sth;
+        } else {
+          // assume it was json map
+          this.object = sth;
+        }
       }
       catch (err, stackTrace) {
         ExceptionReporter.reportException(err, stackTrace);

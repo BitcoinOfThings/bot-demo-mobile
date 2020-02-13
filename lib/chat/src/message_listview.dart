@@ -1,12 +1,14 @@
 part of dash_chat;
 
+// this is the main chat view
 class MessageListView extends StatefulWidget {
   final List<ChatMessage> messages;
+  // the current user
   final ChatUser user;
   final bool showuserAvatar;
   final DateFormat dateFormat;
   final DateFormat timeFormat;
-  final bool showAvatarForEverMessage;
+  final bool showAvatarForEveryMessage;
   final Function(ChatUser) onPressAvatar;
   final Function(ChatUser) onLongPressAvatar;
   final bool renderAvatarOnTop;
@@ -46,7 +48,7 @@ class MessageListView extends StatefulWidget {
     this.showuserAvatar,
     this.dateFormat,
     this.timeFormat,
-    this.showAvatarForEverMessage,
+    this.showAvatarForEveryMessage,
     this.inverted,
     this.onLongPressAvatar,
     this.onLongPressMessage,
@@ -146,15 +148,24 @@ class _MessageListViewState extends State<MessageListView> {
                   itemCount: widget.messages.length,
                   itemBuilder: (context, i) {
                     final j = i + 1;
-                    bool showAvatar = false;
+                    bool isMessageFromCurrentUser = 
+                      widget.messages[i].user.uid == widget.user.uid;
+                    bool showAvatarLeft = false;
+                    bool showAvatarRight = 
+                      isMessageFromCurrentUser && widget.showAvatarForEveryMessage;
                     bool first = false;
                     bool last = false;
                     bool showDate;
-                    if (j < widget.messages.length) {
-                      showAvatar = widget.messages[j].user.uid !=
-                          widget.messages[i].user.uid;
-                    } else {
-                      showAvatar = true;
+                    if (!isMessageFromCurrentUser)
+                    {
+                      if (j < widget.messages.length) {
+                        // show left if message users are different
+                        showAvatarLeft = widget.showAvatarForEveryMessage
+                        || widget.messages[j].user.uid !=
+                            widget.messages[i].user.uid;
+                      } else {
+                        showAvatarLeft = true;
+                      }
                     }
 
                     if (widget.messages.length == 0) {
@@ -217,7 +228,7 @@ class _MessageListViewState extends State<MessageListView> {
                             ),
                             child: Row(
                               mainAxisAlignment:
-                                  widget.messages[i].user.uid == widget.user.uid
+                                  isMessageFromCurrentUser
                                       ? MainAxisAlignment.end
                                       : MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.end,
@@ -228,10 +239,9 @@ class _MessageListViewState extends State<MessageListView> {
                                         MediaQuery.of(context).size.width *
                                             0.02,
                                   ),
-                                  child: ((widget.showAvatarForEverMessage ||
-                                              showAvatar) &&
-                                          widget.messages[i].user.uid !=
-                                              widget.user.uid)
+                                  child: 
+                                      // show other user messages on left
+                                      showAvatarLeft
                                       ? AvatarContainer(
                                           user: widget.messages[i].user,
                                           onPress: widget.onPressAvatar,
@@ -287,8 +297,7 @@ class _MessageListViewState extends State<MessageListView> {
                                       ? widget
                                           .messageBuilder(widget.messages[i])
                                       : MessageContainer(
-                                          isUser: widget.messages[i].user.uid ==
-                                              widget.user.uid,
+                                          isUser: isMessageFromCurrentUser,
                                           message: widget.messages[i],
                                           timeFormat: widget.timeFormat,
                                           messageImageBuilder:
@@ -304,16 +313,15 @@ class _MessageListViewState extends State<MessageListView> {
                                   ),
                                 ),
                                 if (widget.showuserAvatar)
+                                  // shows current user avatar
+                                  // right of message
                                   Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal:
                                           MediaQuery.of(context).size.width *
                                               0.02,
                                     ),
-                                    child: ((widget.showAvatarForEverMessage ||
-                                                showAvatar) &&
-                                            widget.messages[i].user.uid ==
-                                                widget.user.uid)
+                                    child: showAvatarRight
                                         ? AvatarContainer(
                                             user: widget.messages[i].user,
                                             onPress: widget.onPressAvatar,

@@ -12,9 +12,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'app_events.dart';
 import 'chat/dash_chat.dart';
 import 'package:upubsub_mobile/models/Subscription.dart';
 import 'components/bus.dart';
+import 'components/exception_reporter.dart';
 import 'mqtt_stream.dart';
 import 'helpers/constants.dart' as PubSubConstants;
 
@@ -63,7 +65,7 @@ class _ChatState extends State<ChatView> {
         this.setState(() => this._me = new ChatUser(
           name: msg.payload["name"],
           uid: msg?.payload["moneyButtonId"] == null
-            ? '' : msg?.payload["moneyButtonId"],
+            ? msg.payload["name"] : msg?.payload["moneyButtonId"],
           avatar: msg?.payload["avatar"] == null
             ? '' : msg?.payload["avatar"],
           password: msg?.payload["pass"] == null
@@ -89,31 +91,37 @@ class _ChatState extends State<ChatView> {
 
   // _me will be populated when dialog closed
   Future<void> getUser() async {
-    if (_me == null) return;
+    if (_me == null) return; // should never be null
     // subscribe to group/support
-    this._sub = await _getSubscription(this._me);
-    if (this._sub != null) {
-      this._sub.setSingleplexStream();
-      this._sub.pubsub = new PubSubConnection(this._sub);
-      this._sub.enabled = true;
-      var welcome;
-      try {
-        await this._sub.subscribe();
-        welcome = ChatMessage(
-          text:"Hello ${this._me.name}! Welcome to Pub\$ub support chat. Ask your support question here and someone should be available shortly to answer.", 
-          user: this._bot);
+    try {
+      this._sub = await _getSubscription(this._me);
+      if (this._sub != null) {
+        this._sub.setSingleplexStream();
+        this._sub.pubsub = new PubSubConnection(this._sub);
+        this._sub.enabled = true;
+        var welcome;
+        try {
+          await this._sub.subscribe();
+          welcome = ChatMessage(
+            text:"Hello ${this._me.name}! Welcome to Pub\$ub support chat. Ask your support question here and someone should be available shortly to answer.", 
+            user: this._bot);
+        }
+        catch (ex) {
+          // ${ex.toString()}.
+          welcome = ChatMessage(
+            text:"Hello ${this._me.name}! ${ex.toString()}. There was an error. Chat is not available. Contact support at http://upubsub.com", 
+            user: this._bot);
+        }
+        _sub.stream.add(
+          StreamMessage(
+            _sub.topic,
+            jsonEncode(welcome.toJson())
+        ));
       }
-      catch (ex) {
-        // ${ex.toString()}.
-        welcome = ChatMessage(
-          text:"Hello ${this._me.name}! ${ex.toString()}. There was an error. Chat is not available. Contact support at http://upubsub.com", 
-          user: this._bot);
-      }
-      _sub.stream.add(
-        StreamMessage(
-          _sub.topic,
-          jsonEncode(welcome.toJson())
-      ));
+    }
+    catch (ex, st) {
+      ExceptionReporter.reportException(ex, st);
+      AppEvents.publish(ex.toString());
     }
   }
 
@@ -182,7 +190,7 @@ class _ChatState extends State<ChatView> {
         if (!snapshot.hasData) {
           return waiting();
         } else {
-          print(snapshot);
+          //print(snapshot);
           final streammessage = snapshot.data;
           ChatMessage message;
           if (streammessage.object != null) {
@@ -211,7 +219,7 @@ class _ChatState extends State<ChatView> {
             timeFormat: DateFormat('HH:mm'),
             messages: messages,
             showUserAvatar: true,
-            showAvatarForEveryMessage: false,
+            showAvatarForEveryMessage: true,
             scrollToBottom: true,
             onPressAvatar: (ChatUser user) {
                 // pop action menu

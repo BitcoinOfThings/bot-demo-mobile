@@ -401,6 +401,7 @@ class DashChatState extends State<DashChat> {
     return SingleChildScrollView(
       physics: ClampingScrollPhysics(),
       child: Container(
+        //TODO: why 80 hard coded?
         height: widget.height != null
             ? widget.height
             : MediaQuery.of(context).size.height - 80.0,
@@ -419,13 +420,14 @@ class DashChatState extends State<DashChat> {
               scrollController: widget.scrollController != null
                   ? widget.scrollController
                   : scrollController,
+              // the current user
               user: widget.user,
               messages: widget.messages,
               showuserAvatar: widget.showUserAvatar,
               dateFormat: widget.dateFormat,
               timeFormat: widget.timeFormat,
               inverted: widget.inverted,
-              showAvatarForEverMessage: widget.showAvatarForEveryMessage,
+              showAvatarForEveryMessage: widget.showAvatarForEveryMessage,
               onLongPressAvatar: widget.onLongPressAvatar,
               onPressAvatar: widget.onPressAvatar,
               onLongPressMessage: widget.onLongPressMessage,
