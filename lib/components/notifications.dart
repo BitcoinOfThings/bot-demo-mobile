@@ -72,10 +72,10 @@ final BehaviorSubject<String> selectNotificationSubject =
 // show a NotificationMessage
   Future<void> showOneLine(msg) async {
     if (msg == null) return;
-    //TODO: what is this channel stuff?
+    //See https://developer.android.com/training/notify-user/channels
     var androidPlatformChannelSpecifics = 
       AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
+        'upubsub.com', 'PubSub Notifications', 'Notifications for upubsub.com',
         importance: Importance.Max, 
         priority: Priority.High, 
         ticker: 'ticker',

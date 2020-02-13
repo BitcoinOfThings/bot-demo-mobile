@@ -35,7 +35,7 @@ class _ChatState extends State<ChatView> {
     name: "Chat Bot",
     uid: "0123",
     avatar: 
-    "https://amphenol-antennas.com/wp-content/uploads/2017/05/Customer-Support-Icon-300x300.jpg"
+    "https://upubsub.com/static/images/Customer-Support-Icon.jpg"
     //"https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTiTK6pMtIb5hAtMBd93Fr_XIbYmzvl9n-4h6tq0HooGqvQjWST"
     //"https://cdn1.iconfinder.com/data/icons/user-pictures/100/supportfemale-512.png",
   );
@@ -222,7 +222,7 @@ class _ChatState extends State<ChatView> {
             showAvatarForEveryMessage: true,
             scrollToBottom: true,
             onPressAvatar: (ChatUser user) {
-                // pop action menu
+                // user avatar popup action menu
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => 

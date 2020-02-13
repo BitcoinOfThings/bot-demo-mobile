@@ -200,7 +200,7 @@ class DashChat extends StatefulWidget {
   /// true - shows a loadEarlier Widget
   final bool shouldShowLoadEarlier;
 
-  /// Override the default behaviour of the onScrollToBottom Widget
+  /// Override the default behaviour of the loadearlier Widget?
   final Widget Function() showLoadEarlierWidget;
 
   /// Override the default behaviour of the onLoadEarleir Widget
@@ -396,15 +396,23 @@ class DashChatState extends State<DashChat> {
     );
   }
 
+  void _onAfterBuild(BuildContext context){
+      double initPos = widget.inverted ? 0.0 : scrollController.position.maxScrollExtent;
+      scrollController.jumpTo(initPos);
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) 
+      => _onAfterBuild(context));
+
     return SingleChildScrollView(
       physics: ClampingScrollPhysics(),
       child: Container(
-        //TODO: why 80 hard coded?
+        //height affects scrolling
         height: widget.height != null
-            ? widget.height
-            : MediaQuery.of(context).size.height - 80.0,
+            ? widget.height 
+            : MediaQuery.of(context).size.height - 150.0,
         width: widget.width != null
             ? widget.width
             : MediaQuery.of(context).size.width,
