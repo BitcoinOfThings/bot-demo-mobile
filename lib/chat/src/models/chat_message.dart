@@ -54,11 +54,13 @@ class ChatMessage {
   ChatMessage.fromJson(Map<dynamic, dynamic> json) {
     var emojiParser = EmojiParser();
     id = json['id'];
-    text = emojiParser.emojify(json['text']);
+    text = json['text'] != null ? emojiParser.emojify(json['text']) : null;
     image = json['image'];
     vedio = json['vedio'];
-    createdAt = DateTime.fromMillisecondsSinceEpoch(json['createdAt']);
-    user = ChatUser.fromJson(json['user']);
+    createdAt = json['createdAt'] != null ? DateTime.fromMillisecondsSinceEpoch(json['createdAt']) : DateTime.now();
+    
+    user = json['user'] != null ? ChatUser.fromJson(json['user']) : ChatUser(uid: 'unk', name:'not given') ;
+    
     quickReplies = json['quickReplies'] != null
         ? QuickReplies.fromJson(json['quickReplies'])
         : null;
